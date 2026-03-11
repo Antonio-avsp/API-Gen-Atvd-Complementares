@@ -1,7 +1,5 @@
 package com.pi.apigenatvdcomplementares.models;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,20 +14,18 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "tb_registros_acao")
-public class RegistroAcao extends Auditable {
+@Entity(name = "tb_certificados")
+public class Certificado extends Auditable {
 
   @Id
+  @Column(name = "certificado_id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "acao", nullable = false, length = 255)
-  private String acao;
+  @Column(name = "nome_arquivo", nullable = false, length = 100)
+  private String nomeArquivo;
 
-  @Column(name = "descricao", nullable = false, length = 500)
-  private String text;
-
-  @Column(name = "data_hora", nullable = false)
-  private LocalDateTime dataHora;
+  @Column(name = "url_arquivo", nullable = false, length = 255)
+  private String UrlArquivo;
 
 }

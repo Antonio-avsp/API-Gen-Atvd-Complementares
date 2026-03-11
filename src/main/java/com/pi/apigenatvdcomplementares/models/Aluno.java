@@ -7,33 +7,37 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 
 @Getter
 @Setter
-@Entity
-@Table(name = "alunos")
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity(name = "tb_alunos")
 public class Aluno extends Auditable {
     
     @Id 
-    @Column(name = "usuario_id", length = 36)
-    private String usuarioId;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId // Indica que o ID do Aluno é o mesmo do Usuario associado.
-    private Usuario usuario;
+    @Column(name = "usuario_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Usuario usuarioId;
     
     @Column(name = "matricula", nullable = false, unique = true, length = 20)
     private String matricula;
 
-    @OneToMany (mappedBy = "aluno", cascade = CascadeType.ALL, orphanRemoval = true)
+    @MapsId // O (ID) desta entidade será uma cópia exata do ID da entidade relacionada.
+    @OneToOne(fetch = FetchType.LAZY)
+    private Usuario usuario;
+    
+    @OneToMany(mappedBy = "aluno", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Curso> cursos = new ArrayList<>();  
 
     @OneToMany(mappedBy = "aluno")
