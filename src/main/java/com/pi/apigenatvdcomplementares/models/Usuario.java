@@ -10,7 +10,6 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -52,7 +51,7 @@ public class Usuario extends Auditable {
     @Column(name = "perfis")
     private Set<PerfilUsuario> perfis;
 
-    @Embedded // Indica que os campos de Aluno são parte da entidade Usuario e serão mapeados para as colunas da tabela de Usuario.
+    // @Embedded // Indica que os campos de Aluno são parte da entidade Usuario e serão mapeados para as colunas da tabela de Usuario.
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Aluno aluno;
 

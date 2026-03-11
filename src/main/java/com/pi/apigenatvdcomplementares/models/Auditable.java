@@ -3,6 +3,8 @@ package com.pi.apigenatvdcomplementares.models;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
+
+
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -20,9 +22,13 @@ public abstract class Auditable {
     @Column(name = "atualizado_em", nullable = false)
     private LocalDateTime atualizadoEm;
 
-    @PrePersist // Executa automaticamente antes de persistir um novo registro no banco de dados.
-    public void prePersist() { 
-        // Define a data e hora atual para ambos os campos criadoEm e atualizadoEm quando um novo registro é criado.
+    // MÉTODOS //
+
+    @PrePersist // Executa automaticamente antes de persistir um novo registro no banco de
+                // dados.
+    public void prePersist() {
+        // Define a data e hora atual para ambos os campos criadoEm e atualizadoEm
+        // quando um novo registro é criado.
         LocalDateTime now = LocalDateTime.now();
         criadoEm = now;
         atualizadoEm = now;
@@ -30,7 +36,8 @@ public abstract class Auditable {
 
     @PreUpdate // Executa automaticamente antes de atualizar um registro existente.
     public void preUpdate() {
-        // Atualiza apenas o campo atualizadoEm para a data e hora atual sempre que um registro for modificado.
+        // Atualiza apenas o campo atualizadoEm para a data e hora atual sempre que um
+        // registro for modificado.
         this.atualizadoEm = LocalDateTime.now();
     }
 }
