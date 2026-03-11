@@ -10,15 +10,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "cursos")
+@Getter
+@Setter
 public class Curso extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "curso_id", length = 50)
-    private String id;
+    private Long id;
 
     @Column(name = "nome", nullable = false, length = 255)
     private String nome;
@@ -26,15 +30,13 @@ public class Curso extends Auditable {
     @Column(name = "carga_horaria_minima", nullable = false)
     private int cargaHorariaMinima;
 
-    @OneToMany(mappedBy = "cursoId")
+    @OneToMany(mappedBy = "curso")
     private List<CoordenadorCurso> coordenadores = new ArrayList<>();
 
-    @OneToMany(mappedBy = "aluno")
+    @OneToMany(mappedBy = "curso")
     private List<Submissao> submissoes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "cursoId")
+    @OneToMany(mappedBy = "curso")
     private List<RegraAtividade> regrasAtividade = new ArrayList<>();
-
-    
 
 }
