@@ -37,5 +37,5 @@ public class Aluno extends Auditable {
     private List<Curso> cursos = new ArrayList<>();  
 
     @OneToMany(mappedBy = "aluno")
-    private List<Submissao> submissaoes = new ArrayList<>();  
+    private List<Submissao> submissoes = new ArrayList<>();  
 }
