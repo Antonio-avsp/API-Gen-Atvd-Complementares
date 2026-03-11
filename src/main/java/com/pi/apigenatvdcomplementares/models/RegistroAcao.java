@@ -4,32 +4,36 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Entity
+@Table(name = "tb_registros_acao")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "tb_registros_acao")
 public class RegistroAcao extends Auditable {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @Column(name = "id", length = 50)
+    private String id;
 
-  @Column(name = "acao", nullable = false, length = 255)
-  private String acao;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
 
-  @Column(name = "descricao", nullable = false, length = 500)
-  private String text;
+    @Column(name = "acao", nullable = false, length = 255)
+    private String acao;
 
-  @Column(name = "data_hora", nullable = false)
-  private LocalDateTime dataHora;
+    @Column(name = "detalhes", length = 1000)
+    private String detalhes;
 
+    @Column(name = "data_hora")
+    private LocalDateTime dataHora;
 }
