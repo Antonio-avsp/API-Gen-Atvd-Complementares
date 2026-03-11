@@ -1,33 +1,37 @@
 package com.pi.apigenatvdcomplementares.models;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Entity
+@Table(name = "regra_atividade")
+@Getter
+@Setter
+@NoArgsConstructor
 public class RegraAtividade extends Auditable {
 
-  @Id
-  @Column(name = "regra_id")
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private String id;
+    @Id
+    @Column(name = "id", length = 50)
+    private String id;
 
-  @Column(name= "curso_id", nullable = false)
-  
-  private Curso cursoId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "curso_id", nullable = false)
+    private Curso curso;
 
-  @Column(name = "area", nullable = false, length = 255)
-  private String area;
+    @Column(name = "area", nullable = false, length = 255)
+    private String area;
 
-  @Column(name = "limite_horas", nullable = false)
-  private int limiteHoras;
+    @Column(name = "limite_horas", nullable = false)
+    private Integer limiteHoras;
 
-  @Column(name = "exige_comprovante", nullable = false)
-  private boolean exigeComprovante;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  private Curso curso;
-    
+    @Column(name = "exige_comprovante", nullable = false)
+    private Boolean exigeComprovante;
 }
