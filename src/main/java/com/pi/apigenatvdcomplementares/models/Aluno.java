@@ -7,12 +7,12 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,24 +22,28 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "tb_alunos")
+@Entity
+@Table(name = "tb_alunos")
 public class Aluno extends Auditable {
-    
-    @Id 
+
+    @Id
     @Column(name = "usuario_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Usuario usuarioId;
-    
+    private String usuarioId;
+
     @Column(name = "matricula", nullable = false, unique = true, length = 20)
     private String matricula;
 
-    @MapsId // O (ID) desta entidade será uma cópia exata do ID da entidade relacionada.
+    // O ID desta entidade será o mesmo ID do usuário
+    @MapsId
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
-    
-    @OneToMany(mappedBy = "aluno", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Curso> cursos = new ArrayList<>();  
 
+    // Relação com tabela intermediária aluno_curso
+    @OneToMany(mappedBy = "aluno", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AlunoCurso> cursos = new ArrayList<>();
+
+    // Submissões feitas pelo aluno
     @OneToMany(mappedBy = "aluno")
-    private List<Submissao> submissoes = new ArrayList<>();  
+    private List<Submissao> submissoes = new ArrayList<>();
 }
