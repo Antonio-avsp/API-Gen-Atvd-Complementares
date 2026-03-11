@@ -1,4 +1,5 @@
 package com.pi.apigenatvdcomplementares.models;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,19 +20,16 @@ import lombok.Setter;
 @Table(name = "tb_coordenadores_curso")
 public class CoordenadorCurso extends Auditable {
 
-  @Id
-  @Column(name = "id", length = 50)
-  private String id;
+    @Id
+    @Column(name = "id", length = 50)
+    private String id;
 
-  @ManyToOne(fetch = FetchType.LAZY) 
-  @JoinColumn(name = "coordenador_id", nullable = false)
-  private Usuario coordenador;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coordenador_id", nullable = false)
+    private Usuario coordenador;
 
-  @ManyToOne(fetch = FetchType.LAZY) // 
-  @JoinColumn(name = "curso_id", nullable = false)
-  private Curso curso;
-
-  
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "curso_id", nullable = false)
+    private Curso curso;
 
 }
