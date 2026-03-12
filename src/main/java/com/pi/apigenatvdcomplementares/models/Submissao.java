@@ -48,8 +48,7 @@ public class Submissao extends Auditable {
   @Column(name = "historico_status")
   private Set<StatusSubmissao> historicoStatus;
 
-  @OneToMany
-  @JoinColumn(name = "certificado_id")
+  @OneToMany(mappedBy = "submissao")
   private Set<Certificado> certificados;
 
   @ManyToOne(fetch = FetchType.LAZY)
