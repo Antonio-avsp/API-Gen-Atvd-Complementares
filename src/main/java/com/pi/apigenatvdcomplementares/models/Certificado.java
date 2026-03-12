@@ -26,6 +26,6 @@ public class Certificado extends Auditable {
   private String nomeArquivo;
 
   @Column(name = "url_arquivo", nullable = false, length = 255)
-  private String UrlArquivo;
+  private String urlArquivo;
 
 }

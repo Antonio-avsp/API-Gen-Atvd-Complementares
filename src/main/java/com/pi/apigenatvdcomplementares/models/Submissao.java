@@ -38,8 +38,9 @@ public class Submissao extends Auditable {
   @Column(name = "data_submissao", nullable = false)
   private LocalDateTime dataSubmissao;
 
+  @Enumerated(EnumType.STRING)
   @Column(name = "status_submissao", nullable = false, length = 50)
-  private String status;
+  private StatusSubmissao status;
 
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "tb_historico_status_submissao", joinColumns = @JoinColumn(name = "submissao_id"))
