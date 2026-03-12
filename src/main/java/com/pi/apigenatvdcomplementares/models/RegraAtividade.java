@@ -6,16 +6,16 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-@Table(name = "regra_atividade")
 @Getter
 @Setter
+@AllArgsConstructor
 @NoArgsConstructor
+@Entity(name = "tb_regra_atividade")
 public class RegraAtividade extends Auditable {
 
     @Id
