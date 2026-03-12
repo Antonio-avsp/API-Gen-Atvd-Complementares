@@ -269,12 +269,12 @@ Este projeto é desenvolvido para fins **exclusivamente acadêmicos** no curso d
 
 <div align="center">
 
-| Integrantes     |
-| --------------- |
-| Jorge Figueredo |
-| Vitor Santos    |
-| Antônio         |
-| Lucas Vinicius  |
+| Integrantes      |
+| ---------------- |
+| Jorge Figueredo  |
+| Vitor Santos     |
+| Antônio Vinicius |
+| Lucas Vinicius   |
 
 </div>
 
