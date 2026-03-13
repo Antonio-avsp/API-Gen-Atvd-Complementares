@@ -31,7 +31,7 @@ public class AlunoService {
         Usuario usuario = usuarioRepository.findById(aluno.getUsuario().getId())  
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado!!"));
 
-        if (alunoRepository.existsByUsuarioId(usuario.getId())) {
+        if (alunoRepository.existsByUsuarioId(usuario.getId())) { // Verifica se já existe um aluno associado a este usuário
             throw new RuntimeException("Já existe um aluno associado a este usuário.");
         }
 
@@ -40,7 +40,7 @@ public class AlunoService {
         return alunoRepository.save(aluno);
     }
 
-    public List<Aluno> listarAlunos() {
+    public List<Aluno> listarAlunos() { // Método para listar todos os alunos
         return alunoRepository.findAll();
     }
 
