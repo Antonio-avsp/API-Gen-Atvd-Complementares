@@ -10,7 +10,7 @@ import com.pi.apigenatvdcomplementares.models.Curso;
 @Repository
 public interface CursoRepository extends JpaRepository<Curso, Long> {
 
-    Optional<Curso> findByNome(String nome); // Método para encontrar um curso pelo nome
+    Optional<Curso> findByNomeIgnoreCase(String nome); // Método para encontrar um curso pelo nome ignorando maiúsculas e minúsculas
 
     boolean existsByNome(String nome);
 
