@@ -2,6 +2,7 @@ package com.pi.apigenatvdcomplementares.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,11 +26,14 @@ public class Curso extends Auditable {
     @Column(name = "nome", nullable = false, length = 255)
     private String nome;
 
+    @Column(name = "status_curso", nullable = false, length = 500)
+    private boolean statusCurso;
+
     @Column(name = "carga_horaria_minima", nullable = false)
     private int cargaHorariaMinima;
 
     @OneToMany(mappedBy = "curso")
-    private List<CoordenadorCurso> coordenadores = new ArrayList<>();
+    private Set<CoordenadorCurso> coordenadores;
 
     @OneToMany(mappedBy = "curso")
     private List<Submissao> submissoes = new ArrayList<>();
