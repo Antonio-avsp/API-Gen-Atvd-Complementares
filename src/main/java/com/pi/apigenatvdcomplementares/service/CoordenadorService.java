@@ -65,7 +65,7 @@ public class CoordenadorService {
 
     // Método para deletar um coordenador pelo nome
     public CoordenadorCurso deletarCoordenador(String nome) {
-        CoordenadorCurso coordenadorCurso = coordenadorRepository.findByName(nome)
+        CoordenadorCurso coordenadorCurso = coordenadorRepository.findByCoordenadorNome(nome)
                 .orElseThrow(() -> new RuntimeException("Coordenador não encontrado com nome: " + nome));
 
         coordenadorRepository.delete(coordenadorCurso);

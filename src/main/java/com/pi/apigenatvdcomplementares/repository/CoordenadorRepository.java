@@ -12,8 +12,6 @@ public interface CoordenadorRepository extends JpaRepository<CoordenadorCurso, L
 
     Optional<CoordenadorCurso> findById(Long coordenadorId);
 
-    Optional<CoordenadorCurso> findByName(String nome);
+    Optional<CoordenadorCurso> findByCoordenadorNome(String nome);
 
-    
-    
 }

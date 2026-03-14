@@ -44,4 +44,5 @@ public class Aluno extends Auditable {
     // Submissões feitas pelo aluno
     @OneToMany(mappedBy = "aluno")
     private List<Submissao> submissoes = new ArrayList<>();
+
 }
