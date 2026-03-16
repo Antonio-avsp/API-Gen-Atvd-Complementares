@@ -14,6 +14,6 @@ public interface AlunoRepository extends JpaRepository<Aluno, String> {
 
     boolean existsByMatricula(String matricula); // Método para verificar se um aluno com a matrícula fornecida já existe
 
-    boolean existsByUsuarioId(String usuarioId); // Método para verificar se um aluno com o ID do usuário fornecido já existe
+    boolean existsByUsuarioId(Long usuarioId); // Método para verificar se um aluno com o ID do usuário fornecido já existe
     
 }
