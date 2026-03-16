@@ -21,27 +21,24 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "tb_alunos")
+@Entity (name = "tb_alunos")
 public class Aluno extends Auditable {
 
     @Id
     @Column(name = "usuario_id")
-    private String usuarioId;
+    private Long usuarioId;
 
     @Column(name = "matricula", nullable = false, unique = true, length = 20)
     private String matricula;
 
-    // O ID desta entidade será o mesmo ID do usuário
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    // Relação com tabela intermediária aluno_curso
     @OneToMany(mappedBy = "aluno", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AlunoCurso> cursos = new ArrayList<>();
 
-    // Submissões feitas pelo aluno
     @OneToMany(mappedBy = "aluno")
     private List<Submissao> submissoes = new ArrayList<>();
 }
