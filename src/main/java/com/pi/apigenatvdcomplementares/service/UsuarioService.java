@@ -2,7 +2,7 @@ package com.pi.apigenatvdcomplementares.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.pi.apigenatvdcomplementares.models.Usuario;
@@ -11,13 +11,20 @@ import com.pi.apigenatvdcomplementares.repository.UsuarioRepository;
 @Service
 public class UsuarioService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+        this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public Usuario salvarUsuario(Usuario usuario) {
         if (usuarioRepository.existsByEmail(usuario.getEmail())) {
-            throw new RuntimeException("Já existe um usuário com este email."); // Verifica se já existe um usuário com o mesmo email antes de salvar
+            throw new RuntimeException("Já existe um usuário com esse email.");
         }
+
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         return usuarioRepository.save(usuario);
     }
 
@@ -25,32 +32,18 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    public Usuario buscarPorId(String id) {
+    public Usuario buscarPorId(Long id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com id: " + id)); // Método para buscar usuário por ID
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
     }
 
     public Usuario buscarPorEmail(String email) {
         return usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com email: " + email)); // Método para buscar usuário por email
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
     }
 
-    public Usuario atualizarUsuario(String id, Usuario usuarioAtualizado) { // Método para atualizar um usuário existente
-        Usuario usuarioExistente = buscarPorId(id);
-
-        if (!usuarioExistente.getEmail().equals(usuarioAtualizado.getEmail()) &&
-                usuarioRepository.existsByEmail(usuarioAtualizado.getEmail())) {
-            throw new RuntimeException("Já existe um usuário com este email.");
-        }
-        usuarioExistente.setNome(usuarioAtualizado.getNome());
-        usuarioExistente.setEmail(usuarioAtualizado.getEmail());
-        usuarioExistente.setPerfil(usuarioAtualizado.getPerfil());
-
-        return usuarioRepository.save(usuarioExistente);
-    }
-
-    public void deletarUsuario(String id) { // Método para deletar um usuário por ID
-        Usuario usuarioExistente = buscarPorId(id);
-        usuarioRepository.delete(usuarioExistente);
+    public void deletarUsuario(Long id) {
+        Usuario usuario = buscarPorId(id);
+        usuarioRepository.delete(usuario);
     }
 }
