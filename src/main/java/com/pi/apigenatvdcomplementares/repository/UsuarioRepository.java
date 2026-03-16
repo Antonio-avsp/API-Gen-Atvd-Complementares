@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.pi.apigenatvdcomplementares.models.Usuario;
 
 @Repository
-public interface UsuarioRepository extends JpaRepository<Usuario, String> {
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     Optional<Usuario> findByEmail(String email); // Método para encontrar um usuário pelo email
 
