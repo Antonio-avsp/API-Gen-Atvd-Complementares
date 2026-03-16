@@ -11,9 +11,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,12 +28,14 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "tb_usuarios")
+@Entity
+@Table(name = "tb_usuarios")
 public class Usuario extends Auditable {
 
     @Id
-    @Column(name = "id", length = 50)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
     @Column(name = "nome", nullable = false, length = 255)
     private String nome;
@@ -37,6 +43,9 @@ public class Usuario extends Auditable {
     @Column(name = "email", nullable = false, unique = true, length = 255)
     @Email(message = "Por favor, insira um e-mail válido")
     private String email;
+
+    @Column(name = "senha", nullable = false, length = 255)
+    private String senha;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "perfil", nullable = false)
@@ -53,4 +62,5 @@ public class Usuario extends Auditable {
 
     @OneToMany(mappedBy = "coordenador")
     private List<CoordenadorCurso> coordenacoes = new ArrayList<>();
+
 }
