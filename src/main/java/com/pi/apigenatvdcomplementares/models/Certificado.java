@@ -34,5 +34,4 @@ public class Certificado extends Auditable {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "submissao_id", nullable = false)
   private Submissao submissao;
-
 }
