@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 public class UsuarioDTO {
 
-    private String id;
+    private Long id;
     private String nome;
     private String email;
     private PerfilUsuario perfil;
