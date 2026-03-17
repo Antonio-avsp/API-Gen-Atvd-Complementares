@@ -9,11 +9,15 @@ import com.pi.apigenatvdcomplementares.models.Aluno;
 
 @Repository
 public interface AlunoRepository extends JpaRepository<Aluno, Long> {
-    
+
     Optional<Aluno> findByMatricula(String matricula); // Método para encontrar um aluno pela matrícula
 
-    boolean existsByMatricula(String matricula); // Método para verificar se um aluno com a matrícula fornecida já existe
+    Optional<Aluno> findByNome(String nome);
 
-    boolean existsByUsuarioId(Long usuarioId); // Método para verificar se um aluno com o ID do usuário fornecido já existe
-    
+    boolean existsByMatricula(String matricula); // Método para verificar se um aluno com a matrícula fornecida já
+                                                 // existe
+
+    boolean existsByUsuarioId(Long usuarioId); // Método para verificar se um aluno com o ID do usuário fornecido já
+                                               // existe
+
 }

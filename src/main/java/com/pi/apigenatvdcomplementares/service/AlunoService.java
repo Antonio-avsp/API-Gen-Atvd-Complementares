@@ -19,19 +19,22 @@ public class AlunoService {
     @Autowired
     private AlunoRepository alunoRepository;
 
-    public Aluno SalvarAluno(Aluno aluno) {
+    public Aluno salvarAluno(Aluno aluno) {
         if (alunoRepository.existsByMatricula(aluno.getMatricula())) {
             throw new RuntimeException("Já existe um aluno com esta matrícula."); // Verifica se já existe um aluno com
                                                                                   // a mesma matrícula antes de salvar
         }
 
-        if (aluno.getUsuario() == null || aluno.getUsuario().getId() == null) { // Verifica se o aluno tem um usuário associado e se o ID do usuário é válido
+        if (aluno.getUsuario() == null || aluno.getUsuario().getId() == null) { // Verifica se o aluno tem um usuário
+                                                                                // associado e se o ID do usuário é
+                                                                                // válido
             throw new RuntimeException("O usuário associado ao aluno é inválido.");
         }
-        Usuario usuario = usuarioRepository.findById(aluno.getUsuario().getId())  
+        Usuario usuario = usuarioRepository.findById(aluno.getUsuario().getId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado!!"));
 
-        if (alunoRepository.existsByUsuarioId(usuario.getId())) { // Verifica se já existe um aluno associado a este usuário
+        if (alunoRepository.existsByUsuarioId(usuario.getId())) { // Verifica se já existe um aluno associado a este
+                                                                  // usuário
             throw new RuntimeException("Já existe um aluno associado a este usuário.");
         }
 
@@ -46,12 +49,21 @@ public class AlunoService {
 
     public Aluno buscarPorId(Long id) {
         return alunoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Aluno não encontrado com id: " + id)); // Método para buscar aluno por ID
-    }  
-    
+                .orElseThrow(() -> new RuntimeException("Aluno não encontrado com id: " + id)); // Método para buscar
+                                                                                                // aluno por ID
+    }
+
     public Aluno buscarPorMatricula(String matricula) {
         return alunoRepository.findByMatricula(matricula)
-                .orElseThrow(() -> new RuntimeException("Aluno não encontrado com matrícula: " + matricula)); // Método para buscar aluno por matrícula
+                .orElseThrow(() -> new RuntimeException("Aluno não encontrado com matrícula: " + matricula));
+        // busca aluno por matricula
+
+    }
+
+    public Aluno buscarPorNome(String nome) {
+        return alunoRepository.findByNome(nome)
+                .orElseThrow(() -> new RuntimeException("Aluno não encontrado com o nome: " + nome));
+        // busca aluno por nome
     }
 
     public Aluno atualizarAluno(Long id, Aluno alunoAtualizado) { // Método para atualizar um aluno existente
