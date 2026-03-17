@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.pi.apigenatvdcomplementares.dto.UsuarioCreateDTO;
 import com.pi.apigenatvdcomplementares.dto.UsuarioDTO;
+import com.pi.apigenatvdcomplementares.enums.PerfilUsuario;
 import com.pi.apigenatvdcomplementares.models.Usuario;
 import com.pi.apigenatvdcomplementares.service.UsuarioService;
 
@@ -24,12 +25,12 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity<UsuarioDTO> criarUsuario(@RequestBody @Valid UsuarioCreateDTO dto) {
+    public ResponseEntity<UsuarioDTO> criarUsuario(@RequestBody @Valid UsuarioCreateDTO dto, PerfilUsuario perfil) {
         Usuario usuario = new Usuario();
         usuario.setNome(dto.getNome());
         usuario.setEmail(dto.getEmail());
         usuario.setSenha(dto.getSenha());
-        usuario.setPerfil(dto.getPerfil());
+        usuario.setPerfil(perfil);
 
         Usuario novoUsuario = usuarioService.salvarUsuario(usuario);
         return ResponseEntity.status(HttpStatus.CREATED).body(new UsuarioDTO(novoUsuario));
