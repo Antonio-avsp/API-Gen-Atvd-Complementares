@@ -15,7 +15,7 @@ import com.pi.apigenatvdcomplementares.service.CoordenadorService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/coordenadores")
+@RequestMapping("/coordenadores-cursos")
 @Validated
 public class CoordenadorController {
 
