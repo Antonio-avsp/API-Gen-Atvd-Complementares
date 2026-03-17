@@ -29,8 +29,7 @@ public class CoordenadorService {
     private UsuarioRepository usuarioRepository;
 
     @Transactional
-    public List<CoordenadorCurso> cadastrarCoordenadorDaTela(CoordenadorCadastroDTO dto) {
-
+    public List<CoordenadorCurso> cadastrarCoordenador(CoordenadorCadastroDTO dto) {
         Usuario novoCoordenador = new Usuario();
         novoCoordenador.setNome(dto.getNome());
         novoCoordenador.setEmail(dto.getEmail());
@@ -52,6 +51,53 @@ public class CoordenadorService {
         }
 
         return vinculacoesSalvas;
+    }
+
+    public List<CoordenadorCurso> listarTodos() {
+        return coordenadorRepository.findAll();
+    }
+
+    public List<CoordenadorCurso> buscarPorNome(String nome) {
+        List<CoordenadorCurso> coordenadores = coordenadorRepository.findByCoordenadorNome(nome);
+
+        if (coordenadores.isEmpty()) {
+            throw new RuntimeException("Coordenador não encontrado com nome: " + nome);
+        }
+
+        return coordenadores;
+    }
+
+    @Transactional
+    public List<CoordenadorCurso> atualizarCoordenador(String nome, CoordenadorCadastroDTO dto) {
+        List<CoordenadorCurso> coordenadoresExistentes = coordenadorRepository.findByCoordenadorNome(nome);
+
+        if (coordenadoresExistentes.isEmpty()) {
+            throw new RuntimeException("Coordenador não encontrado com nome: " + nome);
+        }
+
+        Usuario coordenador = coordenadoresExistentes.get(0).getCoordenador();
+        coordenador.setNome(dto.getNome());
+        coordenador.setEmail(dto.getEmail());
+
+        usuarioRepository.save(coordenador);
+
+        coordenadorRepository.deleteAll(coordenadoresExistentes);
+
+        List<CoordenadorCurso> novasVinculacoes = new ArrayList<>();
+
+        for (Long idDoCurso : dto.getCursosIds()) {
+            Curso curso = cursoRepository.findById(idDoCurso)
+                    .orElseThrow(() -> new RuntimeException("Curso não encontrado com ID: " + idDoCurso));
+
+            CoordenadorCurso coordenadorCurso = new CoordenadorCurso();
+            coordenadorCurso.setCoordenador(coordenador);
+            coordenadorCurso.setCurso(curso);
+            coordenadorCurso.setEmail(coordenador.getEmail());
+
+            novasVinculacoes.add(coordenadorRepository.save(coordenadorCurso));
+        }
+
+        return novasVinculacoes;
     }
 
     @Transactional
