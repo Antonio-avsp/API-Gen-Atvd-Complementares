@@ -35,7 +35,7 @@ public class SubmissaoService {
         return submissaoRepository.save(submissao);
     }
 
-    public void validarSubmissao(Submissao submissao) {
+    private void validarSubmissao(Submissao submissao) {
         if (submissao.getCertificados() == null || submissao.getCertificados().isEmpty()) {
             throw new IllegalArgumentException("A submissão deve conter pelo menos um certificado");
         }
