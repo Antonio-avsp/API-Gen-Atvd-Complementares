@@ -6,6 +6,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pi.apigenatvdcomplementares.dto.CursoCreateDTO;
 import com.pi.apigenatvdcomplementares.models.CoordenadorCurso;
 import com.pi.apigenatvdcomplementares.models.Curso;
 import com.pi.apigenatvdcomplementares.repository.CoordenadorRepository;
@@ -46,7 +47,8 @@ public class CursoService {
         cursoRepository.deleteById(id);
     }
 
-    public Curso editarCurso(Long id, Curso cursoAtualizado) {
+    // Método para editar um curso existente, verificando se o nome atualizado já existe em outro curso
+    public Curso editarCurso(Long id, CursoCreateDTO cursoAtualizado) {
         Curso cursoExistente = cursoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Curso não encontrado com ID: " + id));
 
