@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.stereotype.Service;
 
 import com.pi.apigenatvdcomplementares.dto.CoordenadorCadastroDTO;
@@ -29,9 +29,6 @@ public class CoordenadorService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Transactional
     public List<CoordenadorCurso> cadastrarCoordenador(CoordenadorCadastroDTO dto) {
@@ -88,7 +85,6 @@ public class CoordenadorService {
         Usuario coordenador = coordenadoresExistentes.get(0).getCoordenador();
         coordenador.setNome(dto.getNome());
         coordenador.setEmail(dto.getEmail());
-        coordenador.setSenha(passwordEncoder.encode(dto.getSenha()));
         coordenador.setPerfil(PerfilUsuario.COORDENADOR);
 
         usuarioRepository.save(coordenador);

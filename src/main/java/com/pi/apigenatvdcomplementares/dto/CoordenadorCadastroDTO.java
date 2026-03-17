@@ -23,9 +23,6 @@ public class CoordenadorCadastroDTO {
     @NotBlank(message = "O email é obrigatório")
     private String email;
 
-    @NotBlank(message = "A senha é obrigatória")
-    private String senha;
-
     @NotEmpty(message = "Selecione pelo menos um curso")
     private List<Long> cursosIds;
 
