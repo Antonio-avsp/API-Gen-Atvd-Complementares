@@ -44,7 +44,7 @@ public class AlunoService {
         return alunoRepository.findAll();
     }
 
-    public Aluno buscarPorId(String id) {
+    public Aluno buscarPorId(Long id) {
         return alunoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Aluno não encontrado com id: " + id)); // Método para buscar aluno por ID
     }  
@@ -54,7 +54,7 @@ public class AlunoService {
                 .orElseThrow(() -> new RuntimeException("Aluno não encontrado com matrícula: " + matricula)); // Método para buscar aluno por matrícula
     }
 
-    public Aluno atualizarAluno(String id, Aluno alunoAtualizado) { // Método para atualizar um aluno existente
+    public Aluno atualizarAluno(Long id, Aluno alunoAtualizado) { // Método para atualizar um aluno existente
         Aluno alunoExistente = buscarPorId(id);
 
         if (!alunoExistente.getMatricula().equals(alunoAtualizado.getMatricula())
@@ -67,7 +67,7 @@ public class AlunoService {
         return alunoRepository.save(alunoExistente);
     }
 
-    public void deletarAluno(String id) { // Método para deletar um aluno por ID
+    public void deletarAluno(Long id) { // Método para deletar um aluno por ID
         Aluno alunoExistente = buscarPorId(id);
         alunoRepository.delete(alunoExistente);
     }

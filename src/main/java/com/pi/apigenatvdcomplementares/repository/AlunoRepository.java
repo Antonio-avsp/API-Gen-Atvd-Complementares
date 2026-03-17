@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.pi.apigenatvdcomplementares.models.Aluno;
 
 @Repository
-public interface AlunoRepository extends JpaRepository<Aluno, String> {
+public interface AlunoRepository extends JpaRepository<Aluno, Long> {
     
     Optional<Aluno> findByMatricula(String matricula); // Método para encontrar um aluno pela matrícula
 
