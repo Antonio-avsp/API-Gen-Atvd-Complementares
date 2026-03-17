@@ -23,11 +23,10 @@ public class CoordenadorController {
     private CoordenadorService coordenadorService;
 
     @PostMapping
-    public ResponseEntity<List<CoordenadorCurso>> cadastrar(
-            @RequestBody @Valid CoordenadorCadastroDTO dto) {
-
+    public ResponseEntity<String> cadastrar(@RequestBody @Valid CoordenadorCadastroDTO dto) {
+        coordenadorService.cadastrarCoordenador(dto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(coordenadorService.cadastrarCoordenador(dto));
+                .body("Coordenador cadastrado com sucesso.");
     }
 
     @GetMapping
