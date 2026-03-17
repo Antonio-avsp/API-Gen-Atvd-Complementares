@@ -35,13 +35,9 @@ public class CoordenadorService {
 
     @Transactional
     public List<CoordenadorCurso> cadastrarCoordenador(CoordenadorCadastroDTO dto) {
-        Usuario novoCoordenador = new Usuario();
-        novoCoordenador.setNome(dto.getNome());
-        novoCoordenador.setEmail(dto.getEmail());
-        novoCoordenador.setSenha(passwordEncoder.encode(dto.getSenha()));
-        novoCoordenador.setPerfil(PerfilUsuario.COORDENADOR);
 
-        novoCoordenador = usuarioRepository.save(novoCoordenador);
+        Usuario coordenador = usuarioRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new RuntimeException("Usuário com esse email não foi encontrado."));
 
         List<CoordenadorCurso> vinculacoesSalvas = new ArrayList<>();
 
@@ -49,10 +45,17 @@ public class CoordenadorService {
             Curso curso = cursoRepository.findById(idDoCurso)
                     .orElseThrow(() -> new RuntimeException("Curso não encontrado com ID: " + idDoCurso));
 
+            boolean jaVinculado = coordenador.getCoordenacoes().stream()
+                    .anyMatch(v -> v.getCurso().getId().equals(idDoCurso));
+
+            if (jaVinculado) {
+                continue;
+            }
+
             CoordenadorCurso coordenadorCurso = new CoordenadorCurso();
-            coordenadorCurso.setCoordenador(novoCoordenador);
+            coordenadorCurso.setCoordenador(coordenador);
             coordenadorCurso.setCurso(curso);
-            coordenadorCurso.setEmail(novoCoordenador.getEmail());
+            coordenadorCurso.setEmail(coordenador.getEmail());
 
             vinculacoesSalvas.add(coordenadorRepository.save(coordenadorCurso));
         }
