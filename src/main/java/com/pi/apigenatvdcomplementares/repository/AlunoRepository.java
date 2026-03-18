@@ -12,7 +12,7 @@ public interface AlunoRepository extends JpaRepository<Aluno, Long> {
 
     Optional<Aluno> findByMatricula(String matricula); // Método para encontrar um aluno pela matrícula
 
-    Optional<Aluno> findByNome(String nome);
+    Optional<Aluno> findByUsuarioNome(String nome);
 
     boolean existsByMatricula(String matricula); // Método para verificar se um aluno com a matrícula fornecida já
                                                  // existe

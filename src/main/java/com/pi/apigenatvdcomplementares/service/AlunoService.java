@@ -61,7 +61,7 @@ public class AlunoService {
     }
 
     public Aluno buscarPorNome(String nome) {
-        return alunoRepository.findByNome(nome)
+        return alunoRepository.findByUsuarioNome(nome)
                 .orElseThrow(() -> new RuntimeException("Aluno não encontrado com o nome: " + nome));
         // busca aluno por nome
     }
