@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pi.apigenatvdcomplementares.dto.CertificadoDTO;
 import com.pi.apigenatvdcomplementares.enums.StatusSubmissao;
 import com.pi.apigenatvdcomplementares.models.Certificado;
 import com.pi.apigenatvdcomplementares.repository.CertificadoRepository;
@@ -16,7 +17,7 @@ public class CertificadoService {
     private CertificadoRepository certificadoRepository;
 
     public void validarCertificado(Certificado certificado) {
-        
+
         if (certificado.getNomeArquivo() == null || certificado.getNomeArquivo().isBlank()) {
             throw new IllegalArgumentException("O nome do arquivo não pode estar vazio");
         }
@@ -56,14 +57,14 @@ public class CertificadoService {
 
     }
 
-    public Certificado atualizarCertificado(Certificado certificadoAtualizado, Long id) {
+    public Certificado atualizarCertificado(CertificadoDTO dto, Long id) {
 
         Certificado certificadoExiste = buscarPorId(id);
 
         verificarSubmissaoPendente(certificadoExiste, "atualizar");
 
-        certificadoExiste.setNomeArquivo(certificadoAtualizado.getNomeArquivo());
-        certificadoExiste.setUrlArquivo(certificadoAtualizado.getUrlArquivo());
+        certificadoExiste.setNomeArquivo(dto.getNomeArquivo());
+        certificadoExiste.setUrlArquivo(dto.getUrlArquivo());
 
         validarCertificado(certificadoExiste);
 
