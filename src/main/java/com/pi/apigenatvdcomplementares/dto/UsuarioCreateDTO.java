@@ -1,5 +1,7 @@
 package com.pi.apigenatvdcomplementares.dto;
 
+import com.pi.apigenatvdcomplementares.enums.PerfilUsuario;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -21,6 +23,6 @@ public class UsuarioCreateDTO {
     @NotBlank(message = "Senha é obrigatória")
     private String senha;
 
-    // @NotNull(message = "Perfil é obrigatório")
-    // private String perfil;
+    private PerfilUsuario perfil;
+
 }
