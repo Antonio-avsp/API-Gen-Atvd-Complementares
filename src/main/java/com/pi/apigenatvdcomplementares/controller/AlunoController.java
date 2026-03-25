@@ -5,60 +5,63 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import com.pi.apigenatvdcomplementares.dto.AlunoDTO;
 import com.pi.apigenatvdcomplementares.models.Aluno;
 import com.pi.apigenatvdcomplementares.service.AlunoService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/aluno")
+@RequestMapping("/alunos")
 @Validated
 public class AlunoController {
 
     @Autowired
-    AlunoService alunoService;
+    private AlunoService alunoService;
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'COORDENADOR')")
     @PostMapping
-    public ResponseEntity<String> cadastrar(@RequestBody @Valid Aluno aluno) {
-        alunoService.salvarAluno(aluno);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body("Aluno cadastrado com sucesso.");
+    public ResponseEntity<AlunoDTO> criarAluno(@RequestBody @Valid AlunoDTO dto) {
+        Aluno novoAluno = alunoService.salvarAluno(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new AlunoDTO(novoAluno));
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'COORDENADOR')")
     @GetMapping
-    public ResponseEntity<List<Aluno>> listar() {
-        return ResponseEntity.ok(alunoService.listarAlunos());
+    public ResponseEntity<List<AlunoDTO>> listarAlunos() {
+        List<AlunoDTO> alunos = alunoService.listarAlunos()
+                .stream()
+                .map(AlunoDTO::new)
+                .toList();
+
+        return ResponseEntity.ok(alunos);
     }
 
-    @GetMapping("/id/{id}")
-    public ResponseEntity<Aluno> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(alunoService.buscarPorId(id));
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'COORDENADOR')")
+    @GetMapping("/{id}")
+    public ResponseEntity<AlunoDTO> buscarPorId(@PathVariable Long id) {
+        Aluno aluno = alunoService.buscarPorId(id);
+        return ResponseEntity.ok(new AlunoDTO(aluno));
     }
 
-    @GetMapping("/matricula/{matricula}")
-    public ResponseEntity<Aluno> buscarPorMatricula(@PathVariable String matricula) {
-        return ResponseEntity.ok(alunoService.buscarPorMatricula(matricula));
-    }
-
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'COORDENADOR')")
     @PutMapping("/{id}")
-    public ResponseEntity<Aluno> atualizar(@PathVariable Long id, @RequestBody Aluno aluno) {
-        return ResponseEntity.ok(alunoService.atualizarAluno(id, aluno));
+    public ResponseEntity<AlunoDTO> atualizarAluno(
+            @PathVariable Long id,
+            @RequestBody @Valid AlunoDTO dto) {
+
+        Aluno alunoAtualizado = alunoService.atualizarAluno(id, dto);
+        return ResponseEntity.ok(new AlunoDTO(alunoAtualizado));
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'COORDENADOR')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarAluno(@PathVariable Long id) {
         alunoService.deletarAluno(id);
         return ResponseEntity.noContent().build();
     }
-
 }
