@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.pi.apigenatvdcomplementares.enums.PerfilUsuario;
 import com.pi.apigenatvdcomplementares.models.Usuario;
 import com.pi.apigenatvdcomplementares.repository.UsuarioRepository;
 
@@ -19,9 +20,22 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Usuario salvarUsuario(Usuario usuario) {
+    public Usuario salvarUsuario(Usuario usuario, Usuario usuarioLogado) {
         if (usuarioRepository.existsByEmail(usuario.getEmail())) {
             throw new RuntimeException("Já existe um usuário com esse email.");
+        }
+
+        PerfilUsuario perfilNovo = usuario.getPerfil();
+        PerfilUsuario perfilLogado = usuarioLogado.getPerfil();
+
+        if (perfilLogado == PerfilUsuario.SUPER_ADMIN) {
+            // pode criar qualquer perfil
+        } else if (perfilLogado == PerfilUsuario.COORDENADOR) {
+            if (perfilNovo != PerfilUsuario.ALUNO) {
+                throw new RuntimeException("Coordenador só pode cadastrar aluno.");
+            }
+        } else {
+            throw new RuntimeException("Você não tem permissão para cadastrar usuários.");
         }
 
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
