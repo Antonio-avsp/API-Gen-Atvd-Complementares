@@ -41,4 +41,6 @@ public class Curso extends Auditable {
     @OneToMany(mappedBy = "curso")
     private List<RegraAtividade> regrasAtividade = new ArrayList<>();
 
+    @OneToMany(mappedBy = "curso")
+    private List<Turma> turmas = new ArrayList<>();
 }
