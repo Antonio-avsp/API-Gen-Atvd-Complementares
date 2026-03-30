@@ -58,6 +58,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/cursos/**").hasRole("SUPER_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/cursos/**").hasRole("SUPER_ADMIN")
 
+                        .requestMatchers(HttpMethod.POST, "/turmas/**").hasAnyRole("SUPER_ADMIN", "COORDENADOR")
+                        .requestMatchers(HttpMethod.PUT, "/turmas/**").hasAnyRole("SUPER_ADMIN", "COORDENADOR")
+                        .requestMatchers(HttpMethod.DELETE, "/turmas/**").hasAnyRole("SUPER_ADMIN", "COORDENADOR")
+                        .requestMatchers(HttpMethod.GET, "/turmas/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/turmas").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
