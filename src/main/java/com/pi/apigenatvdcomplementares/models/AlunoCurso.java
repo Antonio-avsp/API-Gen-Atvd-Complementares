@@ -1,14 +1,13 @@
 package com.pi.apigenatvdcomplementares.models;
 
-import java.util.UUID;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue; // <-- Verifique se tem este import
+import jakarta.persistence.GenerationType; // <-- Verifique se tem este import
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,8 +19,9 @@ import lombok.Setter;
 public class AlunoCurso {
     
     @Id
-    @Column(name = "id", length = 36)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @Column(name = "id")
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "aluno_id", nullable = false)
@@ -31,10 +31,4 @@ public class AlunoCurso {
     @JoinColumn(name = "curso_id", nullable = false)
     private Curso curso;
 
-    @PrePersist
-    public void gerarId() {
-        if (this.id == null) {
-            this.id = UUID.randomUUID().toString();
-        }
-    }
 }
