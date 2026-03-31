@@ -13,10 +13,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "tb_aluno_curso")
 @Getter
 @Setter
 @NoArgsConstructor
+@Entity(name = "tb_aluno_curso")
 public class AlunoCurso {
     
     @Id
