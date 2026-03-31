@@ -10,16 +10,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-@Table(name = "tb_registros_acao")
 @Getter
 @Setter
 @NoArgsConstructor
+@Entity(name = "tb_registros_acao")
 public class RegistroAcao extends Auditable {
 
     @Id
