@@ -62,6 +62,7 @@ public class CursoService {
         // Atualiza os campos do curso existente
         cursoExistente.setNome(cursoAtualizado.getNome());
         cursoExistente.setStatusCurso(cursoAtualizado.isStatusCurso());
+        
 
         return cursoRepository.save(cursoExistente);
     }
