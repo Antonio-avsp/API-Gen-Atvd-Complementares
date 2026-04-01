@@ -26,7 +26,10 @@ public class Curso extends Auditable {
     @Column(name = "nome", nullable = false, length = 255)
     private String nome;
 
-    @Column(name = "status_curso", nullable = false, length = 500)
+    @Column(name = "cod_curso", nullable = false)
+    private String codCurso;
+
+    @Column(name = "status_curso", nullable = false)
     private boolean statusCurso;
 
     @Column(name = "carga_horaria_minima", nullable = false)
