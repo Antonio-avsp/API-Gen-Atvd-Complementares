@@ -1,290 +1,354 @@
-# API - Sistema de Gestão de Atividades Complementares - SENAC
+# API Gen Atvd Complementares
 
-<div align="center">
-
-## 🚧 Status do Projeto
-
-![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow?style=for-the-badge)
-
-## 🛠️ Tecnologias Utilizadas
-
-<p>
-  <img src="https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk" />
-  <img src="https://img.shields.io/badge/SpringBoot-Framework-6DB33F?style=for-the-badge&logo=springboot" />
-  <img src="https://img.shields.io/badge/SpringSecurity-Security-6DB33F?style=for-the-badge&logo=springsecurity" />
-  <img src="https://img.shields.io/badge/MySQL-8-4479A1?style=for-the-badge&logo=mysql" />
+<p align="center">
+  <strong>API REST para gestão de atividades complementares acadêmicas</strong>
 </p>
 
-</div>
+<p align="center">
+  Projeto desenvolvido para apoiar o controle, envio, validação e acompanhamento de atividades complementares no ambiente acadêmico.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-17+-red?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Spring_Boot-4.0.3-6DB33F?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/MySQL-8+-4479A1?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Security-JWT-black?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/OpenAPI-Swagger-85EA2D?style=for-the-badge" />
+</p>
 
 ---
 
-> API REST responsável pela **gestão, registro e validação de atividades complementares em ambiente universitário**, desenvolvida como parte de um projeto acadêmico do **SENAC**.
+## Sobre o projeto
+
+A **API Gen Atvd Complementares** é um backend REST criado para digitalizar o processo de gerenciamento de atividades complementares em instituições de ensino.
+
+A proposta do sistema é substituir processos manuais por uma solução centralizada, segura e escalável, permitindo que alunos, coordenadores e administradores acompanhem todo o fluxo de submissão e validação das atividades acadêmicas.
 
 ---
 
-## 🏫 Informações Acadêmicas
+## Objetivo
 
-| Campo               | Descrição                                        |
-| ------------------- | ------------------------------------------------ |
-| **Instituição**     | SENAC                                            |
-| **Curso**           | Análise e Desenvolvimento de Sistemas (ADS)      |
-| **Disciplina**      | Projeto Integrador / Desenvolvimento de Sistemas |
-| **Semestre**        | 2026.1                                           |
-| **Tipo de Projeto** | Sistema Web Acadêmico                            |
+Automatizar o controle de atividades complementares, permitindo:
 
----
-
-## 📋 Sobre o Projeto
-
-O **Sistema de Gestão de Atividades Complementares** é uma aplicação desenvolvida para **automatizar o controle de horas complementares exigidas nos cursos de graduação**.
-
-Atividades complementares são componentes obrigatórios definidos pelas **Diretrizes Curriculares Nacionais (DCN)** e incluem diversas experiências acadêmicas, como:
-
-- Participação em congressos e eventos acadêmicos
-- Cursos extracurriculares
-- Projetos de pesquisa ou extensão
-- Monitorias
-- Publicações científicas
-- Palestras e workshops
-
-Em muitos casos, esse processo é realizado de forma manual, com entrega de documentos físicos e controle por planilhas.
-
-Este sistema propõe uma solução digital integrada que permite:
-
-- Registro de atividades realizadas pelos alunos
-- Envio de certificados digitalmente
-- Avaliação e validação das atividades por coordenadores
-- Controle automático da carga horária acumulada
-
-A API foi desenvolvida utilizando **Spring Boot** e segue o padrão de **arquitetura em camadas**, garantindo organização, escalabilidade e facilidade de manutenção.
+- cadastro e gerenciamento de usuários
+- cadastro de alunos
+- gerenciamento de cursos
+- gerenciamento de turmas
+- envio e controle de certificados
+- autenticação segura com JWT
+- controle de acesso por perfil
+- rastreabilidade e organização do processo acadêmico
 
 ---
 
-## 🎯 Objetivos
+## Perfis de acesso
 
-### Objetivo Geral
+O sistema trabalha com três perfis principais:
 
-Desenvolver uma **API RESTful segura e escalável** para gerenciamento do ciclo de vida das atividades complementares acadêmicas.
+- **ALUNO**
+- **COORDENADOR**
+- **SUPER_ADMIN**
 
-### Objetivos Específicos
-
-- Permitir cadastro e gerenciamento de usuários
-- Registrar atividades complementares realizadas pelos alunos
-- Permitir envio de comprovantes de atividades
-- Permitir aprovação ou rejeição das atividades por coordenadores
-- Registrar a carga horária obtida em cada atividade
-- Garantir rastreabilidade das ações dentro do sistema
+Cada perfil possui permissões específicas dentro da aplicação.
 
 ---
 
-## 🧩 Perfis de Usuário
+## Funcionalidades já implementadas
 
-O sistema foi projetado para atender três perfis principais.
-
-### 👨‍🎓 Aluno
-
-- Submissão de atividades complementares
-- Upload de certificados
-- Acompanhamento do status das solicitações
-- Visualização da carga horária acumulada
-
-### 👩‍🏫 Coordenador
-
-- Avaliação de atividades enviadas pelos alunos
-- Aprovação ou rejeição de certificados
-- Definição de regras de validação de atividades
-- Acompanhamento do progresso dos alunos
-
-### 🔐 Super Administrador
-
-- Gerenciamento de cursos
-- Gerenciamento de coordenadores
-- Configuração geral do sistema
+- autenticação com login e geração de token JWT
+- controle de acesso com Spring Security
+- gerenciamento de usuários
+- gerenciamento de alunos
+- gerenciamento de cursos
+- gerenciamento de turmas
+- gerenciamento de certificados
+- gerenciamento de coordenadores por curso
+- documentação da API com Swagger/OpenAPI
 
 ---
 
-## 🔄 Fluxo de Submissão de Atividades
+## Tecnologias utilizadas
 
-```
-Aluno envia certificado
-        │
-        ▼
-  ┌───────────┐
-  │ PENDENTE  │
-  └─────┬─────┘
-        │
-  Coordenador avalia
-        │
-  ┌─────┴─────────┐
-  ▼               ▼
-APROVADA      REPROVADA
-```
-
-Todas as mudanças de status são registradas para manter **histórico e transparência no processo de validação**.
+- **Java 17**
+- **Spring Boot 4**
+- **Spring Web MVC**
+- **Spring Data JPA**
+- **Spring Security**
+- **JWT**
+- **Jakarta Validation**
+- **MySQL**
+- **Lombok**
+- **Springdoc OpenAPI / Swagger UI**
+- **Maven**
 
 ---
 
-## 🏗️ Arquitetura do Sistema
+## Estrutura do projeto
 
-A aplicação segue o padrão **Arquitetura em Camadas (Layered Architecture)**.
-
-**Controller** — Responsável por receber requisições HTTP e expor os endpoints da API.
-
-**Service** — Contém as regras de negócio da aplicação.
-
-**Repository** — Responsável pela comunicação com o banco de dados utilizando **Spring Data JPA**.
-
-**Model / Entity** — Representa as entidades persistidas no banco de dados.
-
-Essa arquitetura permite melhor organização do código, separação de responsabilidades e maior facilidade de manutenção.
-
----
-
-## 🗂️ Estrutura do Projeto
-
-```
+```bash
 src/
 ├── main/
 │   ├── java/com/pi/apigenatvdcomplementares/
-│   │
-│   ├── dto/          # Data Transfer Objects
-│   ├── enums/        # Enumerações do sistema
-│   ├── models/       # Entidades JPA
-│   ├── repository/   # Interfaces Spring Data
-│   ├── service/      # Regras de negócio
-│   ├── controller/   # Endpoints da API
-│   │
-│   └── ApigenatvdcomplementaresApplication.java
-│
-└── resources/
-    └── application.properties
+│   │   ├── config/
+│   │   ├── controller/
+│   │   ├── dto/
+│   │   ├── enums/
+│   │   ├── models/
+│   │   ├── repository/
+│   │   ├── security/
+│   │   ├── service/
+│   │   └── ApigenatvdcomplementaresApplication.java
+│   └── resources/
+│       └── application.properties
+
+## Principais endpoints
+
+### Autenticação
+
+* `POST /api/auth/login`
+
+### Usuários
+
+* `POST /usuarios`
+* `GET /usuarios`
+* `GET /usuarios/{id}`
+* `GET /usuarios/email/{email}`
+* `DELETE /usuarios/{id}`
+
+### Alunos
+
+* `POST /alunos`
+* `GET /alunos`
+* `GET /alunos/{id}`
+* `PUT /alunos/{id}`
+* `DELETE /alunos/{id}`
+
+### Cursos
+
+* `POST /cursos`
+* `PUT /cursos/{id}`
+* `GET /cursos/{nome}`
+
+### Turmas
+
+* `POST /turmas`
+* `GET /turmas`
+* `GET /turmas/{id}`
+* `GET /turmas/curso/{cursoId}`
+* `PUT /turmas/{id}`
+* `DELETE /turmas/{id}`
+
+### Certificados
+
+* `POST /certificados`
+* `GET /certificados`
+* `GET /certificados/{id}`
+* `PATCH /certificados/{id}`
+* `DELETE /certificados/{id}`
+
+### Coordenadores por curso
+
+* `POST /coordenadores-cursos`
+* `GET /coordenadores-cursos`
+* `GET /coordenadores-cursos/{nome}`
+* `PUT /coordenadores-cursos/{nome}`
+* `DELETE /coordenadores-cursos/{nome}`
+
+---
+
+## Segurança
+
+A aplicação utiliza **Spring Security** com autenticação **stateless** baseada em **JWT**.
+
+### Regras principais
+
+* login público em `/api/auth/login`
+* Swagger liberado
+* endpoints protegidos por autenticação e perfis
+* autorização com regras por `role`
+* senhas criptografadas
+* filtro JWT para validação do token a cada requisição
+
+---
+
+## Documentação da API
+
+A aplicação possui integração com OpenAPI/Swagger.
+
+Após subir o projeto, acesse:
+
+```bash
+http://localhost:8080/swagger-ui/index.html
 ```
 
 ---
 
----
-
-## 🔐 Segurança
-
-A API utiliza **Spring Security** para garantir segurança na aplicação. Principais mecanismos:
-
-- Autenticação baseada em **JWT**
-- Controle de acesso por perfil (**RBAC**)
-- Senhas criptografadas com **BCrypt**
-- Validação de dados com **Jakarta Bean Validation**
-
----
-
-## ⚙️ Como Executar o Projeto
+## Como executar o projeto
 
 ### Pré-requisitos
 
-- Java 17+
-- Maven
-- MySQL 8+
+Antes de começar, você precisa ter instalado:
 
-### 1. Clonar o repositório
+* Java 17 ou superior
+* Maven
+* MySQL 8 ou superior
+
+### 1. Clone o repositório
 
 ```bash
 git clone https://github.com/Jorgefigueredoo/API-Gen-Atvd-Complementares.git
 ```
 
-### 2. Acessar o diretório
+### 2. Acesse a pasta do projeto
 
 ```bash
 cd API-Gen-Atvd-Complementares
 ```
 
-### 3. Criar banco de dados
+### 3. Crie o banco de dados
 
 ```sql
 CREATE DATABASE api_sistema_senac;
 ```
 
-### 4. Configurar `application.properties`
+### 4. Configure o `application.properties`
+
+No arquivo:
+
+```bash
+src/main/resources/application.properties
+```
+
+adicione ou ajuste as propriedades abaixo:
 
 ```properties
+spring.application.name=apigenatvdcomplementares
+
 spring.datasource.url=jdbc:mysql://localhost:3306/api_sistema_senac
 spring.datasource.username=seu_usuario
 spring.datasource.password=sua_senha
 
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+jwt.secret=sua_chave_base64
+jwt.expiration=86400000
 ```
 
-### 5. Executar a aplicação
+Substitua:
+
+* `seu_usuario` pelo usuário do MySQL
+* `sua_senha` pela senha do MySQL
+* `sua_chave_base64` por uma chave JWT segura em Base64
+
+### 5. Execute a aplicação
 
 ```bash
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
-A API estará disponível em `http://localhost:8080`.
-
----
-
-## 🧪 Testes
-
-Os testes da API podem ser realizados utilizando ferramentas como:
-
-- [Swagger](https://swagger.io/)
-- [Postman](https://www.postman.com/)
-- [Insomnia](https://insomnia.rest/)
-
----
-
-## 🚧 Limitações Atuais e Trabalhos Futuros
-
-O projeto encontra-se em fase de desenvolvimento. Algumas melhorias planejadas incluem:
-
-- Documentação automática com Swagger/OpenAPI
-- Sistema completo de autenticação com JWT
-- Upload de certificados em armazenamento em nuvem
-- Paginação e filtros avançados
-- Testes automatizados com JUnit e Mockito
-- Containerização com Docker
-- Integração contínua com GitHub Actions
-
----
-
-## 🤝 Contribuição
-
-Este é um projeto acadêmico. Contribuições podem ser feitas por meio de issues ou pull requests.
+No Windows:
 
 ```bash
-git checkout -b feature/minha-feature
-git commit -m "feat: descrição da feature"
-git push origin feature/minha-feature
+mvnw.cmd spring-boot:run
+```
+
+A aplicação estará disponível em:
+
+```bash
+http://localhost:8080
 ```
 
 ---
 
-## 📄 Licença
+## Exemplo de autenticação
 
-Este projeto é desenvolvido para fins **exclusivamente acadêmicos** no curso de Análise e Desenvolvimento de Sistemas do SENAC.
+### Requisição
+
+```json
+{
+  "email": "admin@email.com",
+  "senha": "123456"
+}
+```
+
+### Endpoint
+
+```http
+POST /api/auth/login
+```
+
+### Resposta esperada
+
+```json
+{
+  "token": "seu_token_jwt",
+  "tipo": "Bearer"
+}
+```
+
+### Uso do token
+
+```http
+Authorization: Bearer seu_token_jwt
+```
 
 ---
 
-## 👥 Autores
+## Arquitetura
 
-<div align="center">
+O projeto segue uma arquitetura em camadas, com separação de responsabilidades entre:
 
-| Integrantes      |
-| ---------------- |
-| Jorge Figueredo  |
-| Vitor Santos     |
-| Antônio Vinicius |
-| Lucas Vinicius   |
+* **Controller** → exposição dos endpoints
+* **Service** → regras de negócio
+* **Repository** → acesso a dados
+* **Model** → entidades persistidas
+* **DTO** → transporte de dados entre camadas
+* **Security** → autenticação e autorização
 
-</div>
+Essa organização facilita manutenção, escalabilidade e evolução do sistema.
 
 ---
 
-<div align="center">
+## Status do projeto
 
-> _"A educação é a arma mais poderosa que você pode usar para mudar o mundo."_  
-> — **Nelson Mandela**
+🚧 **Em desenvolvimento**
 
-Feito com ☕ e Java para o SENAC · 2026
+O projeto já possui base funcional com autenticação, controle de acesso e principais módulos de cadastro e gestão acadêmica.
 
-</div>
+Melhorias futuras possíveis:
+
+* testes automatizados mais completos
+* padronização de respostas e tratamento global de exceções
+* paginação e filtros
+* upload real de arquivos/certificados
+* deploy em nuvem
+* pipeline CI/CD
+* containerização com Docker
+
+---
+
+## Contexto acadêmico
+
+Projeto desenvolvido no contexto acadêmico do **SENAC**, no curso de **Análise e Desenvolvimento de Sistemas**, como parte das atividades do projeto integrador.
+
+---
+
+## Autores
+
+* **Jorge Figueredo**
+* **Vitor Santos**
+* **Lucas Vinicius**
+* **Renan Souza**
+* **Antonio Vinicius**
+* **Maria Vitória**
+
+---
+
+## Licença
+
+Este projeto foi desenvolvido para fins acadêmicos.
+
+```
+```
