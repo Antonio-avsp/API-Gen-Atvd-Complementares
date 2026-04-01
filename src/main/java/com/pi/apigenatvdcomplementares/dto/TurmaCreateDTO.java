@@ -1,5 +1,7 @@
 package com.pi.apigenatvdcomplementares.dto;
 
+import com.pi.apigenatvdcomplementares.enums.TurnoTurma;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,9 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TurmaCreateDTO {
-    private String nome;
     private String codigo;
-    private String turno;
+    private TurnoTurma turno;
     private String semestre;
     private Long cursoId;
 }

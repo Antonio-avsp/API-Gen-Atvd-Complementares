@@ -43,7 +43,6 @@ public class TurmaService {
         }
 
         Turma turma = new Turma();
-        turma.setNome(dto.getNome());
         turma.setCodigo(dto.getCodigo());
         turma.setTurno(dto.getTurno());
         turma.setSemestre(dto.getSemestre());
@@ -81,7 +80,6 @@ public class TurmaService {
             throw new RuntimeException("Já existe uma turma com esse código");
         }
 
-        turma.setNome(dto.getNome());
         turma.setCodigo(dto.getCodigo());
         turma.setTurno(dto.getTurno());
         turma.setSemestre(dto.getSemestre());

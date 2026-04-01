@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pi.apigenatvdcomplementares.dto.CursoCreateDTO;
+import com.pi.apigenatvdcomplementares.dto.CursoResponseDTO;
 import com.pi.apigenatvdcomplementares.models.Curso;
 import com.pi.apigenatvdcomplementares.service.CursoService;
 
@@ -25,26 +26,38 @@ public class CursoController {
   private CursoService cursoService;
 
   // Endpoints para criar e atualizar cursos
-  @PostMapping
-  public ResponseEntity<Curso> criarCurso(@Valid @RequestBody CursoCreateDTO cursoCreateDTO) {
+ @PostMapping
+  public ResponseEntity<?> criarCurso(@Valid @RequestBody CursoCreateDTO cursoCreateDTO) {
     try {
       Curso curso = new Curso();
       curso.setNome(cursoCreateDTO.getNome());
       curso.setStatusCurso(cursoCreateDTO.isStatusCurso());
       curso.setCargaHorariaMinima(cursoCreateDTO.getCargaHorariaMinima());
+      curso.setCodCurso(cursoCreateDTO.getCodCurso());
 
       Curso novoCurso = cursoService.salvarCurso(curso);
-      return ResponseEntity.status(HttpStatus.CREATED).body(novoCurso);
-    } catch (RuntimeException e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 
-      
+      CursoResponseDTO response = new CursoResponseDTO();
+      response.setId(novoCurso.getId());
+      response.setNome(novoCurso.getNome());
+      response.setCodCurso(novoCurso.getCodCurso());
+      response.setStatusCurso(novoCurso.isStatusCurso());
+      response.setCargaHorariaMinima(novoCurso.getCargaHorariaMinima());
+
+      return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+    } catch (RuntimeException e) {
+      // 2. Criamos um JSON dinâmico para o erro usando Map
+      return ResponseEntity
+          .status(HttpStatus.BAD_REQUEST)
+          .body(java.util.Map.of("erro", e.getMessage()));
     }
   }
 
   // Endpoint para atualizar um curso existente
   @PutMapping("/{id}")
-  public ResponseEntity<Curso> atualizarCurso(@PathVariable Long id, @Valid @RequestBody CursoCreateDTO cursoCreateDTO) {
+  public ResponseEntity<Curso> atualizarCurso(@PathVariable Long id,
+      @Valid @RequestBody CursoCreateDTO cursoCreateDTO) {
     try {
       Curso curso = cursoService.editarCurso(id, cursoCreateDTO);
       return ResponseEntity.ok(curso);

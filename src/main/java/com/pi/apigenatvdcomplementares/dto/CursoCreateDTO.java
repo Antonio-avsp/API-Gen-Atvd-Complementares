@@ -10,6 +10,7 @@ import lombok.Setter;
 public class CursoCreateDTO {
 
   private String nome;
+  private String codCurso;
   private boolean statusCurso;
   private int cargaHorariaMinima;
 
