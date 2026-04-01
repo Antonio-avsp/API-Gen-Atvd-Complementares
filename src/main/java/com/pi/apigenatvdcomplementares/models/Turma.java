@@ -1,7 +1,13 @@
 package com.pi.apigenatvdcomplementares.models;
 
+
+
+import com.pi.apigenatvdcomplementares.enums.TurnoTurma;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,14 +28,12 @@ public class Turma {
     @Column(name = "turma_id")
     private Long id;
 
-    @Column(name = "nome", nullable = false, length = 100)
-    private String nome;
+    @Column(name = "codigo", nullable = false, unique = true, length = 50, updatable = false)
+    private String codigo; // (TADS045 || 2026.1)
 
-    @Column(name = "codigo", nullable = false, unique = true, length = 50)
-    private String codigo;
-
-    @Column(name = "turno", length = 30)
-    private String turno;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "turno", nullable = false)
+    private TurnoTurma turno;
 
     @Column(name = "semestre", length = 20)
     private String semestre;
@@ -40,4 +44,6 @@ public class Turma {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "curso_id", nullable = false)
     private Curso curso;
+
+    
 }
