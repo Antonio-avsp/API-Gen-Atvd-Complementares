@@ -1,5 +1,7 @@
 package com.pi.apigenatvdcomplementares.models;
 
+import com.pi.apigenatvdcomplementares.enums.NivelAcessoCoordGest;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -26,9 +28,15 @@ public class CoordenadorCurso extends Auditable {
     @Column(name = "id", length = 50)
     private Long id;
 
+    @Column(name = "nome", nullable = false, length = 100)
+    private String nome;
+
     @Email
     @Column(name = "email", nullable = false, length = 100)
     private String email;
+
+    @Column(name = "nivel_acesso", nullable = false)
+    private NivelAcessoCoordGest nivelAcesso;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coordenador_id", nullable = false)
