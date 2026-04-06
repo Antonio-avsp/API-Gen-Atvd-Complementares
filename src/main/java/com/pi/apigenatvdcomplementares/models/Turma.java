@@ -2,6 +2,7 @@ package com.pi.apigenatvdcomplementares.models;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pi.apigenatvdcomplementares.enums.TurnoTurma;
 
 import jakarta.persistence.Column;
@@ -31,6 +32,9 @@ public class Turma {
     @Column(name = "codigo", nullable = false, unique = true, length = 50, updatable = false)
     private String codigo; // (TADS045 || 2026.1)
 
+    @Column(nullable = false)
+    private String nome;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "turno", nullable = false)
     private TurnoTurma turno;
@@ -43,6 +47,7 @@ public class Turma {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "curso_id", nullable = false)
+    @JsonIgnoreProperties("turmas")
     private Curso curso;
 
     
