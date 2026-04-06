@@ -1,7 +1,6 @@
 package com.pi.apigenatvdcomplementares.service;
 
 import com.pi.apigenatvdcomplementares.dto.TurmaCreateDTO;
-import com.pi.apigenatvdcomplementares.models.CoordenadorCurso;
 import com.pi.apigenatvdcomplementares.models.Curso;
 import com.pi.apigenatvdcomplementares.models.Turma;
 import com.pi.apigenatvdcomplementares.models.Usuario;
@@ -11,6 +10,7 @@ import com.pi.apigenatvdcomplementares.repository.TurmaRepository;
 import com.pi.apigenatvdcomplementares.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 
@@ -29,6 +29,7 @@ public class TurmaService {
     @Autowired
     private CoordenadorRepository coordenadorRepository;
 
+    @Transactional
     public Turma criarTurma(TurmaCreateDTO dto, String emailUsuarioLogado) {
         Usuario usuario = usuarioRepository.findByEmail(emailUsuarioLogado)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
@@ -44,9 +45,14 @@ public class TurmaService {
 
         Turma turma = new Turma();
         turma.setCodigo(dto.getCodigo());
+        
+        // AJUSTE: Usando o código como nome para satisfazer a restrição do banco
+        turma.setNome(dto.getCodigo()); 
+        
         turma.setTurno(dto.getTurno());
         turma.setSemestre(dto.getSemestre());
         turma.setCurso(curso);
+        turma.setAtiva(true); // Garante que a turma nasça ativa
 
         return turmaRepository.save(turma);
     }
@@ -64,6 +70,7 @@ public class TurmaService {
         return turmaRepository.findByCursoId(cursoId);
     }
 
+    @Transactional
     public Turma atualizarTurma(Long id, TurmaCreateDTO dto, String emailUsuarioLogado) {
         Usuario usuario = usuarioRepository.findByEmail(emailUsuarioLogado)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
@@ -81,6 +88,10 @@ public class TurmaService {
         }
 
         turma.setCodigo(dto.getCodigo());
+        
+        // AJUSTE: Atualiza o nome também caso o código mude
+        turma.setNome(dto.getCodigo()); 
+        
         turma.setTurno(dto.getTurno());
         turma.setSemestre(dto.getSemestre());
         turma.setCurso(curso);
@@ -88,6 +99,7 @@ public class TurmaService {
         return turmaRepository.save(turma);
     }
 
+    @Transactional
     public void deletarTurma(Long id, String emailUsuarioLogado) {
         Usuario usuario = usuarioRepository.findByEmail(emailUsuarioLogado)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
@@ -108,11 +120,8 @@ public class TurmaService {
         }
 
         if ("COORDENADOR".equals(perfil)) {
-            List<CoordenadorCurso> vinculos = coordenadorRepository.findAll();
-
-            boolean permitido = vinculos.stream()
-                    .anyMatch(v -> v.getCoordenador().getId().equals(usuario.getId())
-                            && v.getCurso().getId().equals(cursoId));
+            // Utilizando o método otimizado do repositório que adicionamos anteriormente
+            boolean permitido = coordenadorRepository.existsByCoordenadorIdAndCursoId(usuario.getId(), cursoId);
 
             if (!permitido) {
                 throw new RuntimeException("Coordenador não tem permissão para este curso");
