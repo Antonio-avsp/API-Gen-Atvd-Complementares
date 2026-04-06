@@ -41,24 +41,24 @@ public class CoordenadorController {
         return ResponseEntity.ok(coordenadorService.listarTodos());
     }
 
-    @GetMapping("/{nome}")
+    // Sugestão: Alterar a rota de busca para evitar conflito futuro com busca por ID
+    @GetMapping("/buscar/{nome}")
     public ResponseEntity<List<CoordenadorCurso>> buscarPorNome(
             @PathVariable String nome) {
-
         return ResponseEntity.ok(coordenadorService.buscarPorNome(nome));
     }
 
-    @PutMapping("/{nome}")
-    public ResponseEntity<List<CoordenadorCurso>> atualizar(@PathVariable String nome,
+    // AJUSTE: Alterado de {nome} (String) para {id} (Long) para coincidir com o Service
+    @PutMapping("/{id}")
+    public ResponseEntity<List<CoordenadorCurso>> atualizar(@PathVariable Long id,
             @RequestBody @Valid CoordenadorCadastroDTO dto) {
-
-        return ResponseEntity.ok(coordenadorService.atualizarCoordenador(nome, dto));
+        return ResponseEntity.ok(coordenadorService.atualizarCoordenador(id, dto));
     }
 
-    @DeleteMapping("/{nome}")
-    public ResponseEntity<List<CoordenadorCurso>> deletar(
-            @PathVariable String nome) {
-
-        return ResponseEntity.ok(coordenadorService.deletarCoordenador(nome));
+    // AJUSTE: Alterado para Long id e retorno ResponseEntity<Void> (pois o service agora é void)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        coordenadorService.deletarCoordenador(id);
+        return ResponseEntity.noContent().build();
     }
 }
