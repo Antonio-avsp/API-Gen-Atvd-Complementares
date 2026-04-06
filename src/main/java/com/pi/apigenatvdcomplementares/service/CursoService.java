@@ -47,7 +47,8 @@ public class CursoService {
         cursoRepository.deleteById(id);
     }
 
-    // Método para editar um curso existente, verificando se o nome atualizado já existe em outro curso
+    // Método para editar um curso existente, verificando se o nome atualizado já
+    // existe em outro curso
     public Curso editarCurso(Long id, CursoCreateDTO cursoAtualizado) {
         Curso cursoExistente = cursoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Curso não encontrado com ID: " + id));
@@ -57,17 +58,18 @@ public class CursoService {
                 cursoRepository.existsByNome(cursoAtualizado.getNome())) {
             throw new RuntimeException("Já existe um curso com este nome.");
         }
-       
 
         // Atualiza os campos do curso existente
         cursoExistente.setNome(cursoAtualizado.getNome());
         cursoExistente.setStatusCurso(cursoAtualizado.isStatusCurso());
-        
+        cursoExistente.setCodCurso(cursoAtualizado.getCodCurso());
+        cursoExistente.setCargaHorariaMinima(cursoAtualizado.getCargaHorariaMinima());
 
         return cursoRepository.save(cursoExistente);
     }
 
-    // Usamos o @Transactional para garantir que se a operação der errado, o banco desfaz as alterações
+    // Usamos o @Transactional para garantir que se a operação der errado, o banco
+    // desfaz as alterações
     @Transactional
     public Curso atualizarCoordenador(Long CursoId, Long coordenadorId) {
         Curso curso = cursoRepository.findById(CursoId)
