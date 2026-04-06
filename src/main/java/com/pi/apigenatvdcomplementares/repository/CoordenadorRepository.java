@@ -11,7 +11,13 @@ import com.pi.apigenatvdcomplementares.models.CoordenadorCurso;
 @Repository
 public interface CoordenadorRepository extends JpaRepository<CoordenadorCurso, Long> {
 
+    // Procura um coordenador pelo email
     Optional<CoordenadorCurso> findByEmail(String email);
 
-    List<CoordenadorCurso> findByCoordenadorNome(String nome);
+    // Procura coordenadores cujo nome contenha o texto pesquisado
+    List<CoordenadorCurso> findByNomeContainingIgnoreCase(String nome);
+
+    // Método crucial para verificar se um coordenador específico tem permissão sobre um curso
+    // Note que usamos 'CoordenadorId' porque o campo na entidade CoordenadorCurso chama-se 'coordenador'
+    boolean existsByCoordenadorIdAndCursoId(Long usuarioId, Long cursoId);
 }
