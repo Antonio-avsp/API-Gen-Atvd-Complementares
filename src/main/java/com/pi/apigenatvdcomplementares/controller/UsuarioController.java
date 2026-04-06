@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.pi.apigenatvdcomplementares.dto.UsuarioCreateDTO;
+import com.pi.apigenatvdcomplementares.dto.UsuarioUpdateDTO;
 import com.pi.apigenatvdcomplementares.dto.UsuarioDTO;
 import com.pi.apigenatvdcomplementares.models.Usuario;
 import com.pi.apigenatvdcomplementares.service.UsuarioService;
@@ -52,11 +53,9 @@ public class UsuarioController {
                 .stream()
                 .map(UsuarioDTO::new)
                 .toList();
-
         return ResponseEntity.ok(usuarios);
     }
 
-    // NOVA ROTA: Adicionada antes da /{id} para não dar erro de TypeMismatch
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     @GetMapping("/coordenadores")
     public ResponseEntity<List<UsuarioDTO>> listarCoordenadores() {
@@ -64,7 +63,6 @@ public class UsuarioController {
                 .stream()
                 .map(UsuarioDTO::new)
                 .toList();
-
         return ResponseEntity.ok(coordenadores);
     }
 
@@ -82,9 +80,20 @@ public class UsuarioController {
         return ResponseEntity.ok(new UsuarioDTO(usuario));
     }
 
+    // MÉTODO NOVO: Atualiza o usuário
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PutMapping("/{id}")
+    public ResponseEntity<UsuarioDTO> atualizarUsuario(
+            @PathVariable Long id,
+            @RequestBody @Valid UsuarioUpdateDTO dto) {
+        
+        Usuario usuarioAtualizado = usuarioService.atualizarUsuario(id, dto);
+        return ResponseEntity.ok(new UsuarioDTO(usuarioAtualizado));
+    }
+
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarUsuario(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarUsuario(@PathVariable Long id) { 
         usuarioService.deletarUsuario(id);
         return ResponseEntity.noContent().build();
     }

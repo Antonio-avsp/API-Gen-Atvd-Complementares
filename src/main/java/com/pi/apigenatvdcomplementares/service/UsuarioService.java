@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.pi.apigenatvdcomplementares.dto.UsuarioUpdateDTO;
 import com.pi.apigenatvdcomplementares.enums.PerfilUsuario;
 import com.pi.apigenatvdcomplementares.models.Usuario;
 import com.pi.apigenatvdcomplementares.repository.UsuarioRepository;
@@ -42,8 +43,34 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
+    // MÉTODO NOVO: Atualiza o usuário e ignora a senha se ela vier em branco
+    public Usuario atualizarUsuario(Long id, UsuarioUpdateDTO dto) {
+        Usuario usuario = buscarPorId(id);
+
+        // Verifica se ele mudou o email para um que já existe no banco
+        if (!usuario.getEmail().equals(dto.getEmail()) && usuarioRepository.existsByEmail(dto.getEmail())) {
+            throw new RuntimeException("Já existe outro usuário usando este email.");
+        }
+
+        usuario.setNome(dto.getNome());
+        usuario.setEmail(dto.getEmail());
+        usuario.setPerfil(dto.getPerfil());
+
+        // Só atualiza a senha se o admin digitou alguma coisa no campo
+        if (dto.getSenha() != null && !dto.getSenha().trim().isEmpty()) {
+            usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
+        }
+
+        return usuarioRepository.save(usuario);
+    }
+
     public List<Usuario> listarUsuarios() {
         return usuarioRepository.findAll();
+    }
+
+    // Mantido para o select da tela de Gestão de Acessos
+    public List<Usuario> listarCoordenadores() {
+        return usuarioRepository.findByPerfil(PerfilUsuario.COORDENADOR);
     }
 
     public Usuario buscarPorId(Long id) {
@@ -59,9 +86,5 @@ public class UsuarioService {
     public void deletarUsuario(Long id) {
         Usuario usuario = buscarPorId(id);
         usuarioRepository.delete(usuario);
-    }
-
-    public List<Usuario> listarCoordenadores() {
-        return usuarioRepository.findByPerfil(PerfilUsuario.COORDENADOR);
     }
 }
