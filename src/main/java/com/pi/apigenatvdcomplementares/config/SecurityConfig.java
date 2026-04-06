@@ -21,67 +21,77 @@ import com.pi.apigenatvdcomplementares.security.JwtAuthenticationFilter;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final UserDetailsService userDetailsService;
-    private final PasswordEncoder passwordEncoder;
+        private final JwtAuthenticationFilter jwtAuthenticationFilter;
+        private final UserDetailsService userDetailsService;
+        private final PasswordEncoder passwordEncoder;
 
-    public SecurityConfig(
-            JwtAuthenticationFilter jwtAuthenticationFilter,
-            UserDetailsService userDetailsService,
-            PasswordEncoder passwordEncoder) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.userDetailsService = userDetailsService;
-        this.passwordEncoder = passwordEncoder;
-    }
+        public SecurityConfig(
+                        JwtAuthenticationFilter jwtAuthenticationFilter,
+                        UserDetailsService userDetailsService,
+                        PasswordEncoder passwordEncoder) {
+                this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+                this.userDetailsService = userDetailsService;
+                this.passwordEncoder = passwordEncoder;
+        }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .cors(cors -> {})
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/auth/login",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**"
-                        ).permitAll()
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                return http
+                                .cors(cors -> {
+                                })
+                                .csrf(csrf -> csrf.disable())
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers(
+                                                                "/api/auth/login",
+                                                                "/swagger-ui/**",
+                                                                "/v3/api-docs/**")
+                                                .permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/usuarios").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/usuarios/**").hasRole("SUPER_ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/usuarios/**").hasRole("SUPER_ADMIN")
+                                                .requestMatchers(HttpMethod.POST, "/usuarios").authenticated()
+                                                .requestMatchers(HttpMethod.GET, "/usuarios/**").hasRole("SUPER_ADMIN")
+                                                .requestMatchers(HttpMethod.DELETE, "/usuarios/**")
+                                                .hasRole("SUPER_ADMIN")
 
-                        .requestMatchers("/alunos/**").hasAnyRole("SUPER_ADMIN", "COORDENADOR")
+                                                .requestMatchers("/alunos/**").hasAnyRole("SUPER_ADMIN", "COORDENADOR")
 
-                        .requestMatchers(HttpMethod.GET, "/cursos/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/cursos/**").hasRole("SUPER_ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/cursos/**").hasRole("SUPER_ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/cursos/**").hasRole("SUPER_ADMIN")
+                                                // Permite listagem geral (/cursos) e busca específica (/cursos/**) para
+                                                // qualquer logado
+                                                .requestMatchers(HttpMethod.GET, "/cursos", "/cursos/**")
+                                                .authenticated()
 
-                        .requestMatchers(HttpMethod.POST, "/turmas/**").hasAnyRole("SUPER_ADMIN", "COORDENADOR")
-                        .requestMatchers(HttpMethod.PUT, "/turmas/**").hasAnyRole("SUPER_ADMIN", "COORDENADOR")
-                        .requestMatchers(HttpMethod.DELETE, "/turmas/**").hasAnyRole("SUPER_ADMIN", "COORDENADOR")
-                        .requestMatchers(HttpMethod.GET, "/turmas/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/turmas").authenticated()
+                                                // Restringe criação (/cursos) apenas para administradores
+                                                .requestMatchers(HttpMethod.POST, "/cursos").hasRole("SUPER_ADMIN")
 
-                        .anyRequest().authenticated()
-                )
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
-    }
+                                                // Restringe edição e exclusão (/cursos/id) apenas para administradores
+                                                .requestMatchers(HttpMethod.PUT, "/cursos/**").hasRole("SUPER_ADMIN")
+                                                .requestMatchers(HttpMethod.DELETE, "/cursos/**").hasRole("SUPER_ADMIN")
 
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider =
-                new DaoAuthenticationProvider(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder);
-        return provider;
-    }
+                                                .requestMatchers(HttpMethod.POST, "/turmas/**")
+                                                .hasAnyRole("SUPER_ADMIN", "COORDENADOR")
+                                                .requestMatchers(HttpMethod.PUT, "/turmas/**")
+                                                .hasAnyRole("SUPER_ADMIN", "COORDENADOR")
+                                                .requestMatchers(HttpMethod.DELETE, "/turmas/**")
+                                                .hasAnyRole("SUPER_ADMIN", "COORDENADOR")
+                                                .requestMatchers(HttpMethod.GET, "/turmas/**").authenticated()
+                                                .requestMatchers(HttpMethod.GET, "/turmas").authenticated()
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
+                                                .anyRequest().authenticated())
+                                .authenticationProvider(authenticationProvider())
+                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                                .build();
+        }
+
+        @Bean
+        public AuthenticationProvider authenticationProvider() {
+                DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
+                provider.setPasswordEncoder(passwordEncoder);
+                return provider;
+        }
+
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+                return config.getAuthenticationManager();
+        }
 }
