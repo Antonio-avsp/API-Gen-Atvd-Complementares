@@ -1,19 +1,14 @@
 package com.pi.apigenatvdcomplementares.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.pi.apigenatvdcomplementares.dto.CoordenadorCadastroDTO;
 import com.pi.apigenatvdcomplementares.models.CoordenadorCurso;
@@ -30,33 +25,47 @@ public class CoordenadorController {
     private CoordenadorService coordenadorService;
 
     @PostMapping
-    public ResponseEntity<String> cadastrar(@RequestBody @Valid CoordenadorCadastroDTO dto) {
-        coordenadorService.cadastrarCoordenador(dto);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body("Coordenador cadastrado com sucesso.");
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<String> vincular(@RequestBody Map<String, Long> payload) {
+        Long coordenadorId = payload.get("coordenadorId");
+        Long cursoId = payload.get("cursoId");
+
+        if (coordenadorId == null || cursoId == null) {
+            return ResponseEntity.badRequest().body("IDs do coordenador e do curso são obrigatórios.");
+        }
+
+        coordenadorService.vincularCurso(coordenadorId, cursoId);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Vínculo realizado com sucesso.");
+    }
+
+    @PostMapping("/cadastrar")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<List<CoordenadorCurso>> cadastrar(@RequestBody @Valid CoordenadorCadastroDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(coordenadorService.cadastrarCoordenador(dto));
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'COORDENADOR')")
     public ResponseEntity<List<CoordenadorCurso>> listarTodos() {
         return ResponseEntity.ok(coordenadorService.listarTodos());
     }
 
-    // Sugestão: Alterar a rota de busca para evitar conflito futuro com busca por ID
+    // Rota protegida contra o TypeMismatch (deve usar /buscar/nome)
     @GetMapping("/buscar/{nome}")
-    public ResponseEntity<List<CoordenadorCurso>> buscarPorNome(
-            @PathVariable String nome) {
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<List<CoordenadorCurso>> buscarPorNome(@PathVariable String nome) {
         return ResponseEntity.ok(coordenadorService.buscarPorNome(nome));
     }
 
-    // AJUSTE: Alterado de {nome} (String) para {id} (Long) para coincidir com o Service
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<List<CoordenadorCurso>> atualizar(@PathVariable Long id,
             @RequestBody @Valid CoordenadorCadastroDTO dto) {
         return ResponseEntity.ok(coordenadorService.atualizarCoordenador(id, dto));
     }
 
-    // AJUSTE: Alterado para Long id e retorno ResponseEntity<Void> (pois o service agora é void)
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         coordenadorService.deletarCoordenador(id);
         return ResponseEntity.noContent().build();

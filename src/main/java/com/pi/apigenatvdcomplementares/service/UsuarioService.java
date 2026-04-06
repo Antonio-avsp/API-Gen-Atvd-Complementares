@@ -60,4 +60,8 @@ public class UsuarioService {
         Usuario usuario = buscarPorId(id);
         usuarioRepository.delete(usuario);
     }
+
+    public List<Usuario> listarCoordenadores() {
+        return usuarioRepository.findByPerfil(PerfilUsuario.COORDENADOR);
+    }
 }

@@ -56,6 +56,18 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarios);
     }
 
+    // NOVA ROTA: Adicionada antes da /{id} para não dar erro de TypeMismatch
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @GetMapping("/coordenadores")
+    public ResponseEntity<List<UsuarioDTO>> listarCoordenadores() {
+        List<UsuarioDTO> coordenadores = usuarioService.listarCoordenadores()
+                .stream()
+                .map(UsuarioDTO::new)
+                .toList();
+
+        return ResponseEntity.ok(coordenadores);
+    }
+
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioDTO> buscarPorId(@PathVariable Long id) {
