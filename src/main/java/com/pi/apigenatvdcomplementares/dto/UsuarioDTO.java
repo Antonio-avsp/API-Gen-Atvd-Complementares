@@ -1,25 +1,25 @@
 package com.pi.apigenatvdcomplementares.dto;
 
+import java.time.LocalDateTime;
 import com.pi.apigenatvdcomplementares.enums.PerfilUsuario;
 import com.pi.apigenatvdcomplementares.models.Usuario;
-
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
-@AllArgsConstructor
 @Getter
+@Setter
 public class UsuarioDTO {
-
     private Long id;
     private String nome;
     private String email;
     private PerfilUsuario perfil;
+    private LocalDateTime criadoEm; 
 
-    public UsuarioDTO(Usuario u) {
-        this.id = u.getId();
-        this.nome = u.getNome();
-        this.email = u.getEmail();
-        this.perfil = u.getPerfil();
+    public UsuarioDTO(Usuario usuario) {
+        this.id = usuario.getId();
+        this.nome = usuario.getNome();
+        this.email = usuario.getEmail();
+        this.perfil = usuario.getPerfil();
+        this.criadoEm = usuario.getCriadoEm();
     }
-
 }
