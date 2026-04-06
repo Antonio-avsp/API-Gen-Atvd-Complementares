@@ -2,9 +2,9 @@ package com.pi.apigenatvdcomplementares.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Service;
 
 import com.pi.apigenatvdcomplementares.dto.CoordenadorCadastroDTO;
@@ -32,9 +32,13 @@ public class CoordenadorService {
 
     @Transactional
     public List<CoordenadorCurso> cadastrarCoordenador(CoordenadorCadastroDTO dto) {
-
+        // Busca o usuário pelo e-mail enviado no DTO
         Usuario coordenador = usuarioRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuário com esse email não foi encontrado."));
+                .orElseThrow(() -> new RuntimeException("Usuário com esse e-mail não foi encontrado."));
+
+        // Garante que o usuário tenha o perfil de Coordenador
+        coordenador.setPerfil(PerfilUsuario.COORDENADOR);
+        usuarioRepository.save(coordenador);
 
         List<CoordenadorCurso> vinculacoesSalvas = new ArrayList<>();
 
@@ -42,8 +46,8 @@ public class CoordenadorService {
             Curso curso = cursoRepository.findById(idDoCurso)
                     .orElseThrow(() -> new RuntimeException("Curso não encontrado com ID: " + idDoCurso));
 
-            boolean jaVinculado = coordenador.getCoordenacoes().stream()
-                    .anyMatch(v -> v.getCurso().getId().equals(idDoCurso));
+            // Verifica se já existe o vínculo específico para este curso
+            boolean jaVinculado = coordenadorRepository.existsByCoordenadorIdAndCursoId(coordenador.getId(), idDoCurso);
 
             if (jaVinculado) {
                 continue;
@@ -52,6 +56,7 @@ public class CoordenadorService {
             CoordenadorCurso coordenadorCurso = new CoordenadorCurso();
             coordenadorCurso.setCoordenador(coordenador);
             coordenadorCurso.setCurso(curso);
+            coordenadorCurso.setNome(coordenador.getNome()); // Preenche o nome da entidade CoordenadorCurso
             coordenadorCurso.setEmail(coordenador.getEmail());
 
             vinculacoesSalvas.add(coordenadorRepository.save(coordenadorCurso));
@@ -64,59 +69,51 @@ public class CoordenadorService {
         return coordenadorRepository.findAll();
     }
 
+    // Atualizado para usar o novo método do repositório
     public List<CoordenadorCurso> buscarPorNome(String nome) {
-        List<CoordenadorCurso> coordenadores = coordenadorRepository.findByCoordenadorNome(nome);
+        List<CoordenadorCurso> coordenadores = coordenadorRepository.findByNomeContainingIgnoreCase(nome);
 
         if (coordenadores.isEmpty()) {
-            throw new RuntimeException("Coordenador não encontrado com nome: " + nome);
+            throw new RuntimeException("Nenhum registro de coordenador encontrado com o termo: " + nome);
         }
 
         return coordenadores;
     }
 
     @Transactional
-    public List<CoordenadorCurso> atualizarCoordenador(String nome, CoordenadorCadastroDTO dto) {
-        List<CoordenadorCurso> coordenadoresExistentes = coordenadorRepository.findByCoordenadorNome(nome);
+    public List<CoordenadorCurso> atualizarCoordenador(Long idUsuario, CoordenadorCadastroDTO dto) {
+        // 1. Busca o usuário que terá seus vínculos atualizados
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + idUsuario));
 
-        if (coordenadoresExistentes.isEmpty()) {
-            throw new RuntimeException("Coordenador não encontrado com nome: " + nome);
-        }
+        // 2. Atualiza os dados básicos do usuário
+        usuario.setNome(dto.getNome());
+        usuario.setEmail(dto.getEmail());
+        usuarioRepository.save(usuario);
 
-        Usuario coordenador = coordenadoresExistentes.get(0).getCoordenador();
-        coordenador.setNome(dto.getNome());
-        coordenador.setEmail(dto.getEmail());
-        coordenador.setPerfil(PerfilUsuario.COORDENADOR);
+        // 3. Remove todos os vínculos atuais deste coordenador para recriá-los (estratégia comum de atualização)
+        // Nota: Você pode precisar adicionar List<CoordenadorCurso> findByCoordenadorId(Long id) ao seu repo
+        List<CoordenadorCurso> vinculosAntigos = coordenadorRepository.findAll().stream()
+                .filter(v -> v.getCoordenador().getId().equals(idUsuario))
+                .collect(Collectors.toList());
+        
+        coordenadorRepository.deleteAll(vinculosAntigos);
 
-        usuarioRepository.save(coordenador);
-
-        coordenadorRepository.deleteAll(coordenadoresExistentes);
-
-        List<CoordenadorCurso> novasVinculacoes = new ArrayList<>();
-
-        for (Long idDoCurso : dto.getCursosIds()) {
-            Curso curso = cursoRepository.findById(idDoCurso)
-                    .orElseThrow(() -> new RuntimeException("Curso não encontrado com ID: " + idDoCurso));
-
-            CoordenadorCurso coordenadorCurso = new CoordenadorCurso();
-            coordenadorCurso.setCoordenador(coordenador);
-            coordenadorCurso.setCurso(curso);
-            coordenadorCurso.setEmail(coordenador.getEmail());
-
-            novasVinculacoes.add(coordenadorRepository.save(coordenadorCurso));
-        }
-
-        return novasVinculacoes;
+        // 4. Cria os novos vínculos baseados nos cursosIds do DTO
+        return cadastrarCoordenador(dto);
     }
 
     @Transactional
-    public List<CoordenadorCurso> deletarCoordenador(String nome) {
-        List<CoordenadorCurso> coordenadores = coordenadorRepository.findByCoordenadorNome(nome);
+    public void deletarCoordenador(Long idUsuario) {
+        // Encontra todos os vínculos (tb_coordenadores_curso) ligados a este usuário ID
+        List<CoordenadorCurso> vinculos = coordenadorRepository.findAll().stream()
+                .filter(v -> v.getCoordenador().getId().equals(idUsuario))
+                .collect(Collectors.toList());
 
-        if (coordenadores.isEmpty()) {
-            throw new RuntimeException("Coordenador não encontrado com nome: " + nome);
+        if (vinculos.isEmpty()) {
+            throw new RuntimeException("Vínculos não encontrados para o usuário com ID: " + idUsuario);
         }
 
-        coordenadorRepository.deleteAll(coordenadores);
-        return coordenadores;
+        coordenadorRepository.deleteAll(vinculos);
     }
 }
