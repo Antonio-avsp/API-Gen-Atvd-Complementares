@@ -1,6 +1,7 @@
 package com.pi.apigenatvdcomplementares.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pi.apigenatvdcomplementares.dto.CertificadoCreateDTO;
 import com.pi.apigenatvdcomplementares.dto.CertificadoDTO;
 import com.pi.apigenatvdcomplementares.models.Certificado;
+import com.pi.apigenatvdcomplementares.models.Submissao;
 import com.pi.apigenatvdcomplementares.service.CertificadoService;
 
 import jakarta.validation.Valid;
@@ -28,24 +31,51 @@ public class CertificadoController {
     CertificadoService certificadoService;
 
     @PostMapping
-    public ResponseEntity<Certificado> anexar(@Valid @RequestBody Certificado certificado) {
+    public ResponseEntity<CertificadoDTO> anexar(@Valid @RequestBody CertificadoCreateDTO dto) {
+
+        // 1. Convertemos o DTO limpo na Entidade que o seu Service espera
+        Certificado certificado = new Certificado();
+        certificado.setNomeArquivo(dto.getNomeArquivo());
+        certificado.setUrlArquivo(dto.getUrlArquivo());
+
+        // Criamos uma referência da submissão apenas com o ID (o Hibernate entende
+        // isso)
+        Submissao submissaoRef = new Submissao();
+        submissaoRef.setId(dto.getSubmissaoId());
+        certificado.setSubmissao(submissaoRef);
+
+        // 2. Chamamos o Service
         Certificado novo = certificadoService.anexarCertificado(certificado);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novo);
+
+        // 3. Retornamos o DTO de visualização
+        return ResponseEntity.status(HttpStatus.CREATED).body(new CertificadoDTO(novo));
     }
 
     @GetMapping
-    public ResponseEntity<List<Certificado>> listarTodos() {
-        return ResponseEntity.ok(certificadoService.listarCertificados());
+    public ResponseEntity<List<CertificadoDTO>> listarTodos() {
+        // Transforma a lista de Entidades em uma lista de DTOs
+        List<CertificadoDTO> listaLimpa = certificadoService.listarCertificados()
+                .stream()
+                .map(CertificadoDTO::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(listaLimpa);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Certificado> buscarPorID(@PathVariable Long id) {
-        return ResponseEntity.ok(certificadoService.buscarPorId(id));
+    public ResponseEntity<CertificadoDTO> buscarPorID(@PathVariable Long id) {
+        Certificado certificado = certificadoService.buscarPorId(id);
+
+        // Retorna o DTO em vez da entidade
+        return ResponseEntity.ok(new CertificadoDTO(certificado));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Certificado> atualizarCertificado(@PathVariable Long id, @RequestBody CertificadoDTO dto) {
-        return ResponseEntity.ok(certificadoService.atualizarCertificado(dto, id));
+    public ResponseEntity<CertificadoDTO> atualizarCertificado(@PathVariable Long id, @RequestBody CertificadoDTO dto) {
+        Certificado atualizado = certificadoService.atualizarCertificado(dto, id);
+
+        // Retorna o DTO em vez da entidade
+        return ResponseEntity.ok(new CertificadoDTO(atualizado));
     }
 
     @DeleteMapping("/{id}")
