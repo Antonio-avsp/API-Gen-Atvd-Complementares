@@ -20,7 +20,7 @@ public class RegraAtividadeService {
         return repository.save(regra);
     }
 
-    public void deletar(String id) {
+    public void deletar(Long id) {
         repository.deleteById(id);
     }
 }

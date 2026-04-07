@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface RegraAtividadeRepository extends JpaRepository<RegraAtividade, String> {
+public interface RegraAtividadeRepository extends JpaRepository<RegraAtividade, Long> {
 
     // Método para procurar todas as regras associadas a um curso específico
     List<RegraAtividade> findByCursoId(Long cursoId);
