@@ -25,6 +25,7 @@ public class SubmissaoResponseDTO {
     private String alunoNome;
     private String cursoNome;
     private String coordenadorNome;
+    private String turmaNome; // Novo campo adicionado para integração
 
     public SubmissaoResponseDTO(Submissao s) {
         this.id = s.getId();
@@ -36,14 +37,14 @@ public class SubmissaoResponseDTO {
         this.status = s.getStatus();
         this.historicoStatus = s.getHistoricoStatus();
 
-        // 1. Proteção contra Certificados nulos (evita o erro do .stream())
+        // 1. Proteção contra Certificados nulos
         this.certificados = s.getCertificados() != null 
                 ? s.getCertificados().stream()
                     .map(CertificadoDTO::new)
                     .collect(Collectors.toSet())
-                : Collections.emptySet(); // Retorna um Set vazio em vez de null
+                : Collections.emptySet();
 
-        // 2. Proteção para o Nome do Aluno (navega com segurança entre Aluno e Usuario)
+        // 2. Proteção para o Nome do Aluno
         this.alunoNome = (s.getAluno() != null && s.getAluno().getUsuario() != null)
                 ? s.getAluno().getUsuario().getNome()
                 : "Nome não disponível";
@@ -57,5 +58,10 @@ public class SubmissaoResponseDTO {
         this.coordenadorNome = (s.getCoordenador() != null)
                 ? s.getCoordenador().getNome()
                 : "Aguardando atribuição";
+
+        // 5. Proteção para o Nome da Turma (Integração Aluno -> Turma)
+        this.turmaNome = (s.getAluno() != null && s.getAluno().getTurma() != null)
+                ? s.getAluno().getTurma().getNome()
+                : "Sem Turma vinculada";
     }
 }
