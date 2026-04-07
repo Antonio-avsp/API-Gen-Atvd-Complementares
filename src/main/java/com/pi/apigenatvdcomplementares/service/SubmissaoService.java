@@ -7,11 +7,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.pi.apigenatvdcomplementares.enums.PerfilUsuario;
+import com.pi.apigenatvdcomplementares.dto.SubmissaoRequestDTO;
 import com.pi.apigenatvdcomplementares.enums.StatusSubmissao;
-import com.pi.apigenatvdcomplementares.models.Certificado;
+import com.pi.apigenatvdcomplementares.models.Aluno;
+import com.pi.apigenatvdcomplementares.models.Curso;
 import com.pi.apigenatvdcomplementares.models.Submissao;
-import com.pi.apigenatvdcomplementares.models.Usuario;
 import com.pi.apigenatvdcomplementares.repository.SubmissaoRepository;
 
 @Service
@@ -20,40 +20,37 @@ public class SubmissaoService {
     @Autowired
     private SubmissaoRepository submissaoRepository;
 
-    public Submissao criarSubmissao(Submissao submissao) {
+    // 1. Alterado para receber o DTO
+    public Submissao criarSubmissao(SubmissaoRequestDTO dto) {
+        
+        Submissao submissao = new Submissao();
+        submissao.setTitulo(dto.getTitulo());
+        submissao.setDescricao(dto.getDescricao());
+        submissao.setHoras(dto.getHoras());
 
-        validarSubmissao(submissao);
+        // Mapeando Aluno e Curso apenas pelos IDs
+        Aluno aluno = new Aluno();
+        aluno.setUsuarioId(dto.getAlunoId()); // Ajuste caso sua entidade Aluno use "setId"
+        submissao.setAluno(aluno);
 
+        Curso curso = new Curso();
+        curso.setId(dto.getCursoId());
+        submissao.setCurso(curso);
+
+        // Configurações iniciais de Status e Data
         submissao.setStatus(StatusSubmissao.PENDENTE);
         submissao.setDataSubmissao(LocalDateTime.now());
+        submissao.setHistoricoStatus(new HashSet<>());
         submissao.getHistoricoStatus().add(StatusSubmissao.PENDENTE);
 
-        for (Certificado certificado : submissao.getCertificados()) {
-            certificado.setSubmissao(submissao);
-        }
+        // Removemos a validação que exigia o certificado na criação.
+        // O certificado será atrelado a esta submissão no passo seguinte!
 
         return submissaoRepository.save(submissao);
     }
 
-    private void validarSubmissao(Submissao submissao) {
-        if (submissao.getCertificados() == null || submissao.getCertificados().isEmpty()) {
-            throw new IllegalArgumentException("A submissão deve conter pelo menos um certificado");
-        }
-
-        if (submissao.getCurso() == null) {
-            throw new IllegalArgumentException("O campo de curso é obrigatório.");
-        }
-
-        if (submissao.getAluno() == null || submissao.getAluno().getUsuarioId() == null) {
-            throw new IllegalArgumentException("O campo do aluno é obrigatório");
-        }
-
-        if (submissao.getHistoricoStatus() == null) {
-            submissao.setHistoricoStatus(new HashSet<>());
-        }
-    }
-
-    public List<Submissao> listarSubmissoes() {
+    // 2. Renomeado para listarTodas (para bater com o seu Controller)
+    public List<Submissao> listarTodas() {
         return submissaoRepository.findAll();
     }
 
@@ -79,7 +76,6 @@ public class SubmissaoService {
     }
 
     public Submissao alterarStatusSubmissao(Long id, StatusSubmissao novoStatus) {
-
         Submissao submissao = buscarPorId(id);
 
         if (submissao.getStatus() != StatusSubmissao.PENDENTE) {
@@ -92,13 +88,12 @@ public class SubmissaoService {
         return submissaoRepository.save(submissao);
     }
 
-    public void deletarSubmissao(Long id, Usuario usuario) {
+    // 3. Ajuste rápido no Deletar para bater com o Controller básico que fizemos
+    // (Mais tarde você pode voltar a receber o Usuario aqui quando implementar segurança com Token)
+    public void deletar(Long id) {
         Submissao submissaoExistente = buscarPorId(id);
 
-        boolean naoEstaPendente = submissaoExistente.getStatus() != StatusSubmissao.PENDENTE;
-        boolean naoAdmin = usuario.getPerfil() != PerfilUsuario.SUPER_ADMIN;
-
-        if (naoEstaPendente && naoAdmin) {
+        if (submissaoExistente.getStatus() != StatusSubmissao.PENDENTE) {
             throw new IllegalStateException("Não é possível excluir uma submissão já analisada");
         }
 
