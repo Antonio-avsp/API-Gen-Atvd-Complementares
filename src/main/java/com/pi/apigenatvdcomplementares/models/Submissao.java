@@ -62,4 +62,16 @@ public class Submissao extends Auditable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coordenador_id")
     private Usuario coordenador;
+
+    @Column(name = "titulo", nullable = false)
+    private String titulo;
+
+    @Column(name = "descricao", length = 500)
+    private String descricao;
+
+    @Column(name = "horas", nullable = false)
+    private Integer horas;
+
+    @Column(name = "feedback", columnDefinition = "TEXT")
+    private String feedback;
 }
