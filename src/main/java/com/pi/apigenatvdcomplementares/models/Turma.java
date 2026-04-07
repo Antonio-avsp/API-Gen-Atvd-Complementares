@@ -1,6 +1,6 @@
 package com.pi.apigenatvdcomplementares.models;
 
-
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pi.apigenatvdcomplementares.enums.TurnoTurma;
@@ -15,9 +15,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
-
 
 @Getter
 @Setter
@@ -50,5 +50,6 @@ public class Turma {
     @JsonIgnoreProperties("turmas")
     private Curso curso;
 
-    
+    @OneToMany(mappedBy = "turma")
+    private List<Aluno> alunos;
 }
