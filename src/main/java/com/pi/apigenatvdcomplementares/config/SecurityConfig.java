@@ -86,6 +86,10 @@ public class SecurityConfig {
                                                 .hasAnyRole("SUPER_ADMIN", "COORDENADOR")
                                                 .requestMatchers(HttpMethod.GET, "/turmas", "/turmas/**")
                                                 .authenticated()
+                                                // Gestão de Regras de Atividade
+                                                .requestMatchers("/regras", "/regras/**")
+                                                .hasAnyRole("SUPER_ADMIN", "COORDENADOR")
+
                                                 // Gestão de Coordenadores (Ajuste para a tela AdminCoordinators)
                                                 .requestMatchers("/coordenadores-cursos/**").hasRole("SUPER_ADMIN")
 
