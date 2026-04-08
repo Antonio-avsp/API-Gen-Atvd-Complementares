@@ -29,23 +29,25 @@ public class SubmissaoController {
     @Autowired
     private SubmissaoService submissaoService;
 
+    /**
+     * Aluno cria uma nova submissão de atividade complementar.
+     */
     @PostMapping
     public ResponseEntity<SubmissaoResponseDTO> criar(@Valid @RequestBody SubmissaoRequestDTO dto) {
-        // Envia o DTO para o Service criar e salvar a entidade
         Submissao novaSubmissao = submissaoService.criarSubmissao(dto);
-        
-        // Retorna o ResponseDTO limpo e formatado
         return ResponseEntity.status(HttpStatus.CREATED).body(new SubmissaoResponseDTO(novaSubmissao));
     }
 
+    /**
+     * Lista todas as submissões — aluno, coordenador e admin podem visualizar.
+     */
     @GetMapping
     public ResponseEntity<List<SubmissaoResponseDTO>> listarTodas() {
-        // Busca todas as entidades e converte uma por uma para ResponseDTO
         List<SubmissaoResponseDTO> listaLimpa = submissaoService.listarTodas()
                 .stream()
                 .map(SubmissaoResponseDTO::new)
                 .collect(Collectors.toList());
-                
+
         return ResponseEntity.ok(listaLimpa);
     }
 
@@ -55,22 +57,26 @@ public class SubmissaoController {
         return ResponseEntity.ok(new SubmissaoResponseDTO(submissao));
     }
 
+    /**
+     * Apenas aluno pode deletar a própria submissão (somente PENDENTE).
+     */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id ) {
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
         submissaoService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Apenas coordenador e admin podem aprovar/rejeitar.
+     */
     @PatchMapping("/{id}/aprovar")
     public ResponseEntity<SubmissaoResponseDTO> aprovar(@PathVariable Long id) {
-        // Chama o método que já criamos no seu Service
         Submissao submissao = submissaoService.aprovarSubmissao(id);
         return ResponseEntity.ok(new SubmissaoResponseDTO(submissao));
     }
 
     @PatchMapping("/{id}/rejeitar")
     public ResponseEntity<SubmissaoResponseDTO> rejeitar(@PathVariable Long id) {
-        // Chama o método que já criamos no seu Service
         Submissao submissao = submissaoService.rejeitarSubmissao(id);
         return ResponseEntity.ok(new SubmissaoResponseDTO(submissao));
     }

@@ -30,51 +30,41 @@ public class CertificadoController {
     @Autowired
     CertificadoService certificadoService;
 
+    // Permissão controlada pelo SecurityConfig — ALUNO, COORDENADOR e SUPER_ADMIN
     @PostMapping
     public ResponseEntity<CertificadoDTO> anexar(@Valid @RequestBody CertificadoCreateDTO dto) {
-
-        // 1. Convertemos o DTO limpo na Entidade que o seu Service espera
         Certificado certificado = new Certificado();
         certificado.setNomeArquivo(dto.getNomeArquivo());
         certificado.setUrlArquivo(dto.getUrlArquivo());
 
-        // Criamos uma referência da submissão apenas com o ID (o Hibernate entende
-        // isso)
         Submissao submissaoRef = new Submissao();
         submissaoRef.setId(dto.getSubmissaoId());
         certificado.setSubmissao(submissaoRef);
 
-        // 2. Chamamos o Service
         Certificado novo = certificadoService.anexarCertificado(certificado);
-
-        // 3. Retornamos o DTO de visualização
         return ResponseEntity.status(HttpStatus.CREATED).body(new CertificadoDTO(novo));
     }
 
     @GetMapping
     public ResponseEntity<List<CertificadoDTO>> listarTodos() {
-        // Transforma a lista de Entidades em uma lista de DTOs
         List<CertificadoDTO> listaLimpa = certificadoService.listarCertificados()
                 .stream()
                 .map(CertificadoDTO::new)
                 .collect(Collectors.toList());
-
         return ResponseEntity.ok(listaLimpa);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CertificadoDTO> buscarPorID(@PathVariable Long id) {
         Certificado certificado = certificadoService.buscarPorId(id);
-
-        // Retorna o DTO em vez da entidade
         return ResponseEntity.ok(new CertificadoDTO(certificado));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<CertificadoDTO> atualizarCertificado(@PathVariable Long id, @RequestBody CertificadoDTO dto) {
+    public ResponseEntity<CertificadoDTO> atualizarCertificado(
+            @PathVariable Long id,
+            @RequestBody CertificadoDTO dto) {
         Certificado atualizado = certificadoService.atualizarCertificado(dto, id);
-
-        // Retorna o DTO em vez da entidade
         return ResponseEntity.ok(new CertificadoDTO(atualizado));
     }
 

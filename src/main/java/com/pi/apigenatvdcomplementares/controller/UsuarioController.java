@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,18 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'COORDENADOR')")
+    /**
+     * Endpoint público para qualquer usuário autenticado consultar os próprios dados.
+     * Usado pelo front-end para resolver o usuarioId e alunoId sem precisar de SUPER_ADMIN.
+     *
+     * GET /usuarios/me
+     */
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioDTO> getMe(Authentication authentication) {
+        String email = authentication.getName();
+        Usuario usuario = usuarioService.buscarPorEmail(email);
+        return ResponseEntity.ok(new UsuarioDTO(usuario));
+    }
     @PostMapping
     public ResponseEntity<UsuarioDTO> criarUsuario(
             @RequestBody @Valid UsuarioCreateDTO dto,
@@ -45,8 +55,6 @@ public class UsuarioController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new UsuarioDTO(novoUsuario));
     }
-
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @GetMapping
     public ResponseEntity<List<UsuarioDTO>> listarUsuarios() {
         List<UsuarioDTO> usuarios = usuarioService.listarUsuarios()
@@ -55,8 +63,6 @@ public class UsuarioController {
                 .toList();
         return ResponseEntity.ok(usuarios);
     }
-
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @GetMapping("/coordenadores")
     public ResponseEntity<List<UsuarioDTO>> listarCoordenadores() {
         List<UsuarioDTO> coordenadores = usuarioService.listarCoordenadores()
@@ -65,35 +71,26 @@ public class UsuarioController {
                 .toList();
         return ResponseEntity.ok(coordenadores);
     }
-
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioDTO> buscarPorId(@PathVariable Long id) {
         Usuario usuario = usuarioService.buscarPorId(id);
         return ResponseEntity.ok(new UsuarioDTO(usuario));
     }
-
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @GetMapping("/email/{email}")
     public ResponseEntity<UsuarioDTO> buscarPorEmail(@PathVariable String email) {
         Usuario usuario = usuarioService.buscarPorEmail(email);
         return ResponseEntity.ok(new UsuarioDTO(usuario));
     }
-
-    // MÉTODO NOVO: Atualiza o usuário
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioDTO> atualizarUsuario(
             @PathVariable Long id,
             @RequestBody @Valid UsuarioUpdateDTO dto) {
-        
+
         Usuario usuarioAtualizado = usuarioService.atualizarUsuario(id, dto);
         return ResponseEntity.ok(new UsuarioDTO(usuarioAtualizado));
     }
-
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarUsuario(@PathVariable Long id) { 
+    public ResponseEntity<Void> deletarUsuario(@PathVariable Long id) {
         usuarioService.deletarUsuario(id);
         return ResponseEntity.noContent().build();
     }
