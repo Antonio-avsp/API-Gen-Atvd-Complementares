@@ -25,7 +25,13 @@ public class SubmissaoResponseDTO {
     private String alunoNome;
     private String cursoNome;
     private String coordenadorNome;
-    private String turmaNome; // Novo campo adicionado para integração
+    private String turmaNome;
+
+    /** ID do aluno (tb_alunos.usuario_id) — usado pelo front para filtrar submissões do aluno logado */
+    private Long alunoId;
+
+    /** ID do curso (tb_cursos.curso_id) — usado pelo front para filtrar por curso selecionado */
+    private Long cursoId;
 
     public SubmissaoResponseDTO(Submissao s) {
         this.id = s.getId();
@@ -37,29 +43,39 @@ public class SubmissaoResponseDTO {
         this.status = s.getStatus();
         this.historicoStatus = s.getHistoricoStatus();
 
-        // 1. Proteção contra Certificados nulos
-        this.certificados = s.getCertificados() != null 
+        // Proteção contra certificados nulos
+        this.certificados = s.getCertificados() != null
                 ? s.getCertificados().stream()
                     .map(CertificadoDTO::new)
                     .collect(Collectors.toSet())
                 : Collections.emptySet();
 
-        // 2. Proteção para o Nome do Aluno
+        // Nome do aluno
         this.alunoNome = (s.getAluno() != null && s.getAluno().getUsuario() != null)
                 ? s.getAluno().getUsuario().getNome()
                 : "Nome não disponível";
 
-        // 3. Proteção para o Nome do Curso
-        this.cursoNome = (s.getCurso() != null) 
-                ? s.getCurso().getNome() 
+        // ✅ ID do aluno (campo novo) — necessário para o front filtrar por aluno logado
+        this.alunoId = (s.getAluno() != null)
+                ? s.getAluno().getUsuarioId()
+                : null;
+
+        // Nome do curso
+        this.cursoNome = (s.getCurso() != null)
+                ? s.getCurso().getNome()
                 : "Curso não informado";
 
-        // 4. Proteção para o Coordenador
+        // ✅ ID do curso (campo novo) — necessário para o front filtrar por curso selecionado
+        this.cursoId = (s.getCurso() != null)
+                ? s.getCurso().getId()
+                : null;
+
+        // Coordenador
         this.coordenadorNome = (s.getCoordenador() != null)
                 ? s.getCoordenador().getNome()
                 : "Aguardando atribuição";
 
-        // 5. Proteção para o Nome da Turma (Integração Aluno -> Turma)
+        // Turma do aluno
         this.turmaNome = (s.getAluno() != null && s.getAluno().getTurma() != null)
                 ? s.getAluno().getTurma().getNome()
                 : "Sem Turma vinculada";
