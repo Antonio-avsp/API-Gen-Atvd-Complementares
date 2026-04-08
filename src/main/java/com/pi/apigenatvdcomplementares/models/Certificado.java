@@ -28,7 +28,12 @@ public class Certificado extends Auditable {
   @Column(name = "nome_arquivo", nullable = false, length = 100)
   private String nomeArquivo;
 
-  @Column(name = "url_arquivo", nullable = false, length = 255)
+  /**
+   * Armazena a URL ou o conteúdo base64 do arquivo.
+   * Alterado de VARCHAR(255) para LONGTEXT para suportar arquivos em base64.
+   * O Hibernate aplicará a mudança automaticamente com ddl-auto=update.
+   */
+  @Column(name = "url_arquivo", nullable = false, columnDefinition = "LONGTEXT")
   private String urlArquivo;
 
   @ManyToOne(fetch = FetchType.LAZY)
