@@ -7,7 +7,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,7 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.pi.apigenatvdcomplementares.security.JwtAuthenticationFilter;
 
 @Configuration
-@EnableMethodSecurity
 public class SecurityConfig {
 
         private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -43,24 +41,37 @@ public class SecurityConfig {
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(auth -> auth
-                                                // Rotas Públicas (Auth e Documentação)
+
+                                                // ── Rotas públicas ────────────────────────────────
                                                 .requestMatchers(
                                                                 "/api/auth/login",
                                                                 "/swagger-ui/**",
                                                                 "/v3/api-docs/**")
                                                 .permitAll()
 
-                                                // Gestão de Usuários
+                                                // ── /usuarios/me: qualquer usuário autenticado ────
+                                                // Permite que o aluno consulte os próprios dados
+                                                // (necessário para resolver o alunoId no front-end)
+                                                .requestMatchers(HttpMethod.GET, "/usuarios/me")
+                                                .authenticated()
+
+                                                // ── Gestão de Usuários (SUPER_ADMIN) ─────────────
                                                 .requestMatchers(HttpMethod.POST, "/usuarios", "/usuarios/**")
                                                 .authenticated()
-                                                .requestMatchers(HttpMethod.GET, "/usuarios/**").hasRole("SUPER_ADMIN")
+                                                .requestMatchers(HttpMethod.GET, "/usuarios/**")
+                                                .hasRole("SUPER_ADMIN")
                                                 .requestMatchers(HttpMethod.DELETE, "/usuarios/**")
                                                 .hasRole("SUPER_ADMIN")
 
-                                                // Gestão de Alunos
-                                                .requestMatchers("/alunos/**").hasAnyRole("SUPER_ADMIN", "COORDENADOR")
+                                                // ── Gestão de Alunos ──────────────────────────────
+                                                // /alunos/me: aluno consulta os próprios dados
+                                                .requestMatchers(HttpMethod.GET, "/alunos/me")
+                                                .authenticated()
+                                                // demais endpoints de aluno: apenas admin e coordenador
+                                                .requestMatchers("/alunos/**")
+                                                .hasAnyRole("SUPER_ADMIN", "COORDENADOR")
 
-                                                // Gestão de Cursos (Ajustado para capturar a raiz /cursos)
+                                                // ── Gestão de Cursos ──────────────────────────────
                                                 .requestMatchers(HttpMethod.GET, "/cursos", "/cursos/**")
                                                 .authenticated()
                                                 .requestMatchers(HttpMethod.POST, "/cursos", "/cursos/**")
@@ -70,14 +81,7 @@ public class SecurityConfig {
                                                 .requestMatchers(HttpMethod.DELETE, "/cursos", "/cursos/**")
                                                 .hasRole("SUPER_ADMIN")
 
-                                                // Local:
-                                                // src/main/java/com/pi/apigenatvdcomplementares/config/SecurityConfig.java
-
-                                                // Local:
-                                                // src/main/java/com/pi/apigenatvdcomplementares/config/SecurityConfig.java
-
-                                                // Use esta sintaxe para garantir que tanto "/turmas" quanto
-                                                // "/turmas/qualquer-coisa" sejam capturados
+                                                // ── Gestão de Turmas ──────────────────────────────
                                                 .requestMatchers(HttpMethod.POST, "/turmas", "/turmas/**")
                                                 .hasAnyRole("SUPER_ADMIN", "COORDENADOR")
                                                 .requestMatchers(HttpMethod.PUT, "/turmas", "/turmas/**")
@@ -86,16 +90,41 @@ public class SecurityConfig {
                                                 .hasAnyRole("SUPER_ADMIN", "COORDENADOR")
                                                 .requestMatchers(HttpMethod.GET, "/turmas", "/turmas/**")
                                                 .authenticated()
-                                                // Gestão de Regras de Atividade
+
+                                                // ── Gestão de Regras ──────────────────────────────
                                                 .requestMatchers("/regras", "/regras/**")
                                                 .hasAnyRole("SUPER_ADMIN", "COORDENADOR")
 
-                                                // Gestão de Coordenadores (Ajuste para a tela AdminCoordinators)
-                                                .requestMatchers("/coordenadores-cursos/**").hasRole("SUPER_ADMIN")
+                                                // ── Coordenadores ─────────────────────────────────
+                                                .requestMatchers("/coordenadores-cursos/**")
+                                                .hasRole("SUPER_ADMIN")
+
+                                                // ── Submissões ────────────────────────────────────
+                                                // Aluno pode criar e listar as próprias submissões
+                                                .requestMatchers(HttpMethod.GET, "/submissoes", "/submissoes/**")
+                                                .authenticated()
+                                                .requestMatchers(HttpMethod.POST, "/submissoes", "/submissoes/**")
+                                                .authenticated()
+                                                .requestMatchers(HttpMethod.DELETE, "/submissoes/**")
+                                                .authenticated()
+                                                .requestMatchers(HttpMethod.PATCH, "/submissoes/**")
+                                                .hasAnyRole("SUPER_ADMIN", "COORDENADOR")
+
+                                                // ── Certificados ──────────────────────────────────
+                                                // Aluno pode anexar certificados às próprias submissões
+                                                .requestMatchers(HttpMethod.GET, "/certificados", "/certificados/**")
+                                                .authenticated()
+                                                .requestMatchers(HttpMethod.POST, "/certificados", "/certificados/**")
+                                                .authenticated()
+                                                .requestMatchers(HttpMethod.PATCH, "/certificados/**")
+                                                .authenticated()
+                                                .requestMatchers(HttpMethod.DELETE, "/certificados/**")
+                                                .authenticated()
 
                                                 .anyRequest().authenticated())
                                 .authenticationProvider(authenticationProvider())
-                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                                .addFilterBefore(jwtAuthenticationFilter,
+                                                UsernamePasswordAuthenticationFilter.class)
                                 .build();
         }
 
