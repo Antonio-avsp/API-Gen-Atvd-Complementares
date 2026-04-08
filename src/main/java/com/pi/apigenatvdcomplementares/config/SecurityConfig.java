@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -92,7 +93,15 @@ public class SecurityConfig {
                                                 .authenticated()
 
                                                 // ── Gestão de Regras ──────────────────────────────
-                                                .requestMatchers("/regras", "/regras/**")
+                                                // Aluno pode consultar regras do próprio curso (GET)
+                                                .requestMatchers(HttpMethod.GET, "/regras", "/regras/**")
+                                                .authenticated()
+                                                // Apenas admin e coordenador podem criar/editar/deletar
+                                                .requestMatchers(HttpMethod.POST, "/regras", "/regras/**")
+                                                .hasAnyRole("SUPER_ADMIN", "COORDENADOR")
+                                                .requestMatchers(HttpMethod.PUT, "/regras/**")
+                                                .hasAnyRole("SUPER_ADMIN", "COORDENADOR")
+                                                .requestMatchers(HttpMethod.DELETE, "/regras/**")
                                                 .hasAnyRole("SUPER_ADMIN", "COORDENADOR")
 
                                                 // ── Coordenadores ─────────────────────────────────
