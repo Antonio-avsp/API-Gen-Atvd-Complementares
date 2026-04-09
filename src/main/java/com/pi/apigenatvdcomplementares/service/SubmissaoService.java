@@ -1,6 +1,7 @@
 package com.pi.apigenatvdcomplementares.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
 
@@ -20,36 +21,66 @@ public class SubmissaoService {
     @Autowired
     private SubmissaoRepository submissaoRepository;
 
-    // 1. Alterado para receber o DTO
+    @Autowired
+    private EmailService emailService;
+
+    private static final DateTimeFormatter FORMATTER =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm");
+
+    // ── Criar submissão + email de confirmação ────────────────────────────────
+
     public Submissao criarSubmissao(SubmissaoRequestDTO dto) {
-        
+
         Submissao submissao = new Submissao();
         submissao.setTitulo(dto.getTitulo());
         submissao.setDescricao(dto.getDescricao());
         submissao.setHoras(dto.getHoras());
 
-        // Mapeando Aluno e Curso apenas pelos IDs
         Aluno aluno = new Aluno();
-        aluno.setUsuarioId(dto.getAlunoId()); // Ajuste caso sua entidade Aluno use "setId"
+        aluno.setUsuarioId(dto.getAlunoId());
         submissao.setAluno(aluno);
 
         Curso curso = new Curso();
         curso.setId(dto.getCursoId());
         submissao.setCurso(curso);
 
-        // Configurações iniciais de Status e Data
         submissao.setStatus(StatusSubmissao.PENDENTE);
         submissao.setDataSubmissao(LocalDateTime.now());
         submissao.setHistoricoStatus(new HashSet<>());
         submissao.getHistoricoStatus().add(StatusSubmissao.PENDENTE);
 
-        // Removemos a validação que exigia o certificado na criação.
-        // O certificado será atrelado a esta submissão no passo seguinte!
+        Submissao salva = submissaoRepository.save(submissao);
 
-        return submissaoRepository.save(submissao);
+        // Dispara email de confirmação de forma assíncrona
+        enviarEmailConfirmacao(salva);
+
+        return salva;
     }
 
-    // 2. Renomeado para listarTodas (para bater com o seu Controller)
+    private void enviarEmailConfirmacao(Submissao submissao) {
+        try {
+            if (submissao.getAluno() != null && submissao.getAluno().getUsuario() != null) {
+                String emailAluno = submissao.getAluno().getUsuario().getEmail();
+                String nomeAluno  = submissao.getAluno().getUsuario().getNome();
+                String dataEnvio  = submissao.getDataSubmissao().format(FORMATTER);
+
+                emailService.enviarConfirmacaoSubmissao(
+                        emailAluno,
+                        nomeAluno,
+                        submissao.getTitulo(),
+                        submissao.getHoras(),
+                        submissao.getId(),
+                        dataEnvio
+                );
+            }
+        } catch (Exception e) {
+            // Email falhou — não interrompe o fluxo principal
+            System.err.println("Aviso: não foi possível enviar email de confirmação: " + e.getMessage());
+        }
+    }
+
+    // ── Listar ───────────────────────────────────────────────────────────────
+
     public List<Submissao> listarTodas() {
         return submissaoRepository.findAll();
     }
@@ -67,13 +98,60 @@ public class SubmissaoService {
         return submissaoRepository.findByStatus(StatusSubmissao.PENDENTE);
     }
 
+    // ── Aprovar + email ───────────────────────────────────────────────────────
+
     public Submissao aprovarSubmissao(Long id) {
-        return alterarStatusSubmissao(id, StatusSubmissao.APROVADA);
+        Submissao submissao = alterarStatusSubmissao(id, StatusSubmissao.APROVADA);
+
+        try {
+            if (submissao.getAluno() != null && submissao.getAluno().getUsuario() != null) {
+                String nomeCoord = submissao.getCoordenador() != null
+                        ? submissao.getCoordenador().getNome()
+                        : "Coordenador";
+
+                emailService.enviarAprovacao(
+                        submissao.getAluno().getUsuario().getEmail(),
+                        submissao.getAluno().getUsuario().getNome(),
+                        submissao.getTitulo(),
+                        submissao.getHoras(),
+                        nomeCoord,
+                        submissao.getFeedback()
+                );
+            }
+        } catch (Exception e) {
+            System.err.println("Aviso: não foi possível enviar email de aprovação: " + e.getMessage());
+        }
+
+        return submissao;
     }
 
+    // ── Rejeitar + email ──────────────────────────────────────────────────────
+
     public Submissao rejeitarSubmissao(Long id) {
-        return alterarStatusSubmissao(id, StatusSubmissao.REPROVADA);
+        Submissao submissao = alterarStatusSubmissao(id, StatusSubmissao.REPROVADA);
+
+        try {
+            if (submissao.getAluno() != null && submissao.getAluno().getUsuario() != null) {
+                String nomeCoord = submissao.getCoordenador() != null
+                        ? submissao.getCoordenador().getNome()
+                        : "Coordenador";
+
+                emailService.enviarReprovacao(
+                        submissao.getAluno().getUsuario().getEmail(),
+                        submissao.getAluno().getUsuario().getNome(),
+                        submissao.getTitulo(),
+                        nomeCoord,
+                        submissao.getFeedback()
+                );
+            }
+        } catch (Exception e) {
+            System.err.println("Aviso: não foi possível enviar email de reprovação: " + e.getMessage());
+        }
+
+        return submissao;
     }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
 
     public Submissao alterarStatusSubmissao(Long id, StatusSubmissao novoStatus) {
         Submissao submissao = buscarPorId(id);
@@ -88,8 +166,6 @@ public class SubmissaoService {
         return submissaoRepository.save(submissao);
     }
 
-    // 3. Ajuste rápido no Deletar para bater com o Controller básico que fizemos
-    // (Mais tarde você pode voltar a receber o Usuario aqui quando implementar segurança com Token)
     public void deletar(Long id) {
         Submissao submissaoExistente = buscarPorId(id);
 
