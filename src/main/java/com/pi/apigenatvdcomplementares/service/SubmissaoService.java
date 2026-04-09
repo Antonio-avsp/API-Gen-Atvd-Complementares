@@ -106,7 +106,12 @@ public class SubmissaoService {
 
     // ── Aprovar + email ───────────────────────────────────────────────────────
 
-    public Submissao aprovarSubmissao(Long id) {
+    public Submissao aprovarSubmissao(Long id, String feedback) {
+        if (feedback != null && !feedback.isBlank()) {
+            Submissao s = buscarPorId(id);
+            s.setFeedback(feedback);
+            submissaoRepository.save(s);
+        }
         Submissao submissao = alterarStatusSubmissao(id, StatusSubmissao.APROVADA);
 
         try {
@@ -136,7 +141,12 @@ public class SubmissaoService {
 
     // ── Rejeitar + email ──────────────────────────────────────────────────────
 
-    public Submissao rejeitarSubmissao(Long id) {
+    public Submissao rejeitarSubmissao(Long id, String feedback) {
+        if (feedback != null && !feedback.isBlank()) {
+            Submissao s = buscarPorId(id);
+            s.setFeedback(feedback);
+            submissaoRepository.save(s);
+        }
         Submissao submissao = alterarStatusSubmissao(id, StatusSubmissao.REPROVADA);
 
         try {

@@ -1,6 +1,7 @@
 package com.pi.apigenatvdcomplementares.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,25 +30,18 @@ public class SubmissaoController {
     @Autowired
     private SubmissaoService submissaoService;
 
-    /**
-     * Aluno cria uma nova submissão de atividade complementar.
-     */
     @PostMapping
     public ResponseEntity<SubmissaoResponseDTO> criar(@Valid @RequestBody SubmissaoRequestDTO dto) {
         Submissao novaSubmissao = submissaoService.criarSubmissao(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(new SubmissaoResponseDTO(novaSubmissao));
     }
 
-    /**
-     * Lista todas as submissões — aluno, coordenador e admin podem visualizar.
-     */
     @GetMapping
     public ResponseEntity<List<SubmissaoResponseDTO>> listarTodas() {
         List<SubmissaoResponseDTO> listaLimpa = submissaoService.listarTodas()
                 .stream()
                 .map(SubmissaoResponseDTO::new)
                 .collect(Collectors.toList());
-
         return ResponseEntity.ok(listaLimpa);
     }
 
@@ -57,27 +51,27 @@ public class SubmissaoController {
         return ResponseEntity.ok(new SubmissaoResponseDTO(submissao));
     }
 
-    /**
-     * Apenas aluno pode deletar a própria submissão (somente PENDENTE).
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         submissaoService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * Apenas coordenador e admin podem aprovar/rejeitar.
-     */
     @PatchMapping("/{id}/aprovar")
-    public ResponseEntity<SubmissaoResponseDTO> aprovar(@PathVariable Long id) {
-        Submissao submissao = submissaoService.aprovarSubmissao(id);
+    public ResponseEntity<SubmissaoResponseDTO> aprovar(
+            @PathVariable Long id,
+            @RequestBody(required = false) Map<String, String> body) {
+        String feedback = (body != null) ? body.get("feedback") : null;
+        Submissao submissao = submissaoService.aprovarSubmissao(id, feedback);
         return ResponseEntity.ok(new SubmissaoResponseDTO(submissao));
     }
 
     @PatchMapping("/{id}/rejeitar")
-    public ResponseEntity<SubmissaoResponseDTO> rejeitar(@PathVariable Long id) {
-        Submissao submissao = submissaoService.rejeitarSubmissao(id);
+    public ResponseEntity<SubmissaoResponseDTO> rejeitar(
+            @PathVariable Long id,
+            @RequestBody(required = false) Map<String, String> body) {
+        String feedback = (body != null) ? body.get("feedback") : null;
+        Submissao submissao = submissaoService.rejeitarSubmissao(id, feedback);
         return ResponseEntity.ok(new SubmissaoResponseDTO(submissao));
     }
 }

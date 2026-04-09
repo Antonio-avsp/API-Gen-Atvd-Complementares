@@ -51,7 +51,6 @@ public class EmailService {
         String html = buildEmailBase(
                 "Submissão recebida",
                 "#1a56db",
-                buildIconeCheck(),
                 nomeAluno,
                 "Sua atividade complementar foi <strong>recebida com sucesso</strong> e está aguardando avaliação do coordenador.",
                 buildTabela(new String[][]{
@@ -90,7 +89,6 @@ public class EmailService {
         String html = buildEmailBase(
                 "Atividade aprovada",
                 "#1a56db",
-                buildIconeCheck(),
                 nomeAluno,
                 "Sua atividade foi <strong style='color:#065f46;'>aprovada</strong> pelo coordenador e as horas já foram computadas no seu histórico.",
                 buildTabela(new String[][]{
@@ -126,7 +124,6 @@ public class EmailService {
         String html = buildEmailBase(
                 "Atividade reprovada",
                 "#1a56db",
-                buildIconeX(),
                 nomeAluno,
                 "Sua atividade foi <strong style='color:#991b1b;'>reprovada</strong> pelo coordenador. " +
                 "Verifique o motivo abaixo e reenvie com as correções necessárias.",
@@ -148,7 +145,6 @@ public class EmailService {
     private String buildEmailBase(
             String tituloStatus,
             String corHeader,
-            String icone,
             String nomeAluno,
             String mensagem,
             String conteudo,
@@ -166,9 +162,8 @@ public class EmailService {
 
                // Header
                "<tr><td style='background:" + corHeader + ";padding:32px 32px 24px;text-align:center;'>" +
-               "<div style='width:52px;height:52px;background:rgba(255,255,255,0.15);border-radius:50%;" +
-               "display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;'>" +
-               icone + "</div>" +
+               "<img src='https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Senac_logo.svg/320px-Senac_logo.svg.png' " +
+               "alt='Senac' style='height:48px;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;' />" +
                "<p style='color:#ffffff;font-size:18px;font-weight:600;margin:0;'>" +
                "Sistema de Atividades Complementares</p>" +
                "<p style='color:rgba(255,255,255,0.75);font-size:13px;margin:4px 0 0;'>" +
