@@ -13,6 +13,7 @@ import com.pi.apigenatvdcomplementares.enums.StatusSubmissao;
 import com.pi.apigenatvdcomplementares.models.Aluno;
 import com.pi.apigenatvdcomplementares.models.Curso;
 import com.pi.apigenatvdcomplementares.models.Submissao;
+import com.pi.apigenatvdcomplementares.repository.AlunoRepository;
 import com.pi.apigenatvdcomplementares.repository.SubmissaoRepository;
 
 @Service
@@ -23,6 +24,9 @@ public class SubmissaoService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private AlunoRepository alunoRepository;
 
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm");
@@ -59,22 +63,24 @@ public class SubmissaoService {
 
     private void enviarEmailConfirmacao(Submissao submissao) {
         try {
-            if (submissao.getAluno() != null && submissao.getAluno().getUsuario() != null) {
-                String emailAluno = submissao.getAluno().getUsuario().getEmail();
-                String nomeAluno  = submissao.getAluno().getUsuario().getNome();
-                String dataEnvio  = submissao.getDataSubmissao().format(FORMATTER);
+            // Busca o aluno completo com o usuário carregado
+            alunoRepository.findById(submissao.getAluno().getUsuarioId()).ifPresent(aluno -> {
+                if (aluno.getUsuario() != null) {
+                    String emailAluno = aluno.getUsuario().getEmail();
+                    String nomeAluno  = aluno.getUsuario().getNome();
+                    String dataEnvio  = submissao.getDataSubmissao().format(FORMATTER);
 
-                emailService.enviarConfirmacaoSubmissao(
-                        emailAluno,
-                        nomeAluno,
-                        submissao.getTitulo(),
-                        submissao.getHoras(),
-                        submissao.getId(),
-                        dataEnvio
-                );
-            }
+                    emailService.enviarConfirmacaoSubmissao(
+                            emailAluno,
+                            nomeAluno,
+                            submissao.getTitulo(),
+                            submissao.getHoras(),
+                            submissao.getId(),
+                            dataEnvio
+                    );
+                }
+            });
         } catch (Exception e) {
-            // Email falhou — não interrompe o fluxo principal
             System.err.println("Aviso: não foi possível enviar email de confirmação: " + e.getMessage());
         }
     }
@@ -104,20 +110,23 @@ public class SubmissaoService {
         Submissao submissao = alterarStatusSubmissao(id, StatusSubmissao.APROVADA);
 
         try {
-            if (submissao.getAluno() != null && submissao.getAluno().getUsuario() != null) {
-                String nomeCoord = submissao.getCoordenador() != null
-                        ? submissao.getCoordenador().getNome()
-                        : "Coordenador";
+            final Submissao sub = submissao;
+            alunoRepository.findById(submissao.getAluno().getUsuarioId()).ifPresent(aluno -> {
+                if (aluno.getUsuario() != null) {
+                    String nomeCoord = sub.getCoordenador() != null
+                            ? sub.getCoordenador().getNome()
+                            : "Coordenador";
 
-                emailService.enviarAprovacao(
-                        submissao.getAluno().getUsuario().getEmail(),
-                        submissao.getAluno().getUsuario().getNome(),
-                        submissao.getTitulo(),
-                        submissao.getHoras(),
-                        nomeCoord,
-                        submissao.getFeedback()
-                );
-            }
+                    emailService.enviarAprovacao(
+                            aluno.getUsuario().getEmail(),
+                            aluno.getUsuario().getNome(),
+                            sub.getTitulo(),
+                            sub.getHoras(),
+                            nomeCoord,
+                            sub.getFeedback()
+                    );
+                }
+            });
         } catch (Exception e) {
             System.err.println("Aviso: não foi possível enviar email de aprovação: " + e.getMessage());
         }
@@ -131,19 +140,22 @@ public class SubmissaoService {
         Submissao submissao = alterarStatusSubmissao(id, StatusSubmissao.REPROVADA);
 
         try {
-            if (submissao.getAluno() != null && submissao.getAluno().getUsuario() != null) {
-                String nomeCoord = submissao.getCoordenador() != null
-                        ? submissao.getCoordenador().getNome()
-                        : "Coordenador";
+            final Submissao sub = submissao;
+            alunoRepository.findById(submissao.getAluno().getUsuarioId()).ifPresent(aluno -> {
+                if (aluno.getUsuario() != null) {
+                    String nomeCoord = sub.getCoordenador() != null
+                            ? sub.getCoordenador().getNome()
+                            : "Coordenador";
 
-                emailService.enviarReprovacao(
-                        submissao.getAluno().getUsuario().getEmail(),
-                        submissao.getAluno().getUsuario().getNome(),
-                        submissao.getTitulo(),
-                        nomeCoord,
-                        submissao.getFeedback()
-                );
-            }
+                    emailService.enviarReprovacao(
+                            aluno.getUsuario().getEmail(),
+                            aluno.getUsuario().getNome(),
+                            sub.getTitulo(),
+                            nomeCoord,
+                            sub.getFeedback()
+                    );
+                }
+            });
         } catch (Exception e) {
             System.err.println("Aviso: não foi possível enviar email de reprovação: " + e.getMessage());
         }
