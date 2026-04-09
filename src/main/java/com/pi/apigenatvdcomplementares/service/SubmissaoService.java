@@ -74,9 +74,15 @@ public class SubmissaoService {
                     String nomeAluno  = aluno.getUsuario().getNome();
                     String dataEnvio  = submissao.getDataSubmissao().format(FORMATTER);
 
-                    String nomeCurso = submissao.getCurso() != null
-                            ? submissao.getCurso().getNome()
-                            : "Atividades Complementares";
+                    // Busca o curso pelo ID para evitar problema de lazy loading
+                    String nomeCurso = "Atividades Complementares";
+                    if (submissao.getCurso() != null) {
+                        try {
+                            nomeCurso = cursoRepository.findById(submissao.getCurso().getId())
+                                    .map(c -> c.getNome())
+                                    .orElse("Atividades Complementares");
+                        } catch (Exception ignored) {}
+                    }
 
                     emailService.enviarConfirmacaoSubmissao(
                             emailAluno,
@@ -131,9 +137,14 @@ public class SubmissaoService {
                             ? sub.getCoordenador().getNome()
                             : "Coordenador";
 
-                    String nomeCurso = sub.getCurso() != null
-                            ? sub.getCurso().getNome()
-                            : "Atividades Complementares";
+                    String nomeCurso = "Atividades Complementares";
+                    if (sub.getCurso() != null) {
+                        try {
+                            nomeCurso = cursoRepository.findById(sub.getCurso().getId())
+                                    .map(c -> c.getNome())
+                                    .orElse("Atividades Complementares");
+                        } catch (Exception ignored) {}
+                    }
 
                     emailService.enviarAprovacao(
                             aluno.getUsuario().getEmail(),
@@ -171,9 +182,14 @@ public class SubmissaoService {
                             ? sub.getCoordenador().getNome()
                             : "Coordenador";
 
-                    String nomeCurso = sub.getCurso() != null
-                            ? sub.getCurso().getNome()
-                            : "Atividades Complementares";
+                    String nomeCurso = "Atividades Complementares";
+                    if (sub.getCurso() != null) {
+                        try {
+                            nomeCurso = cursoRepository.findById(sub.getCurso().getId())
+                                    .map(c -> c.getNome())
+                                    .orElse("Atividades Complementares");
+                        } catch (Exception ignored) {}
+                    }
 
                     emailService.enviarReprovacao(
                             aluno.getUsuario().getEmail(),
