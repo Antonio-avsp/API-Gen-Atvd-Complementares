@@ -33,7 +33,8 @@ public class SubmissaoService {
     private CursoRepository cursoRepository;
 
     private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm");
+            DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm")
+                    .withZone(java.time.ZoneId.of("America/Sao_Paulo"));
 
     // ── Criar submissão + email de confirmação ────────────────────────────────
 
@@ -72,7 +73,10 @@ public class SubmissaoService {
                 if (aluno.getUsuario() != null) {
                     String emailAluno = aluno.getUsuario().getEmail();
                     String nomeAluno  = aluno.getUsuario().getNome();
-                    String dataEnvio  = submissao.getDataSubmissao().format(FORMATTER);
+                    String dataEnvio = submissao.getDataSubmissao()
+                            .atZone(java.time.ZoneId.of("UTC"))
+                            .withZoneSameInstant(java.time.ZoneId.of("America/Sao_Paulo"))
+                            .format(FORMATTER);
 
                     // Busca o curso pelo ID para evitar problema de lazy loading
                     String nomeCurso = "Atividades Complementares";

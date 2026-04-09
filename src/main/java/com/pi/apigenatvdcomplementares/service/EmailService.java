@@ -169,13 +169,11 @@ public class EmailService {
 
                // Header
                "<tr><td style='background:" + corHeader + ";padding:32px 32px 24px;text-align:center;'>" +
-               "<div style='width:60px;height:60px;background:rgba(255,255,255,0.2);border-radius:50%;" +
-               "display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;'>" +
-               "<svg width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='white' " +
-               "stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>" +
-               "<path d='M22 10v6M2 10l10-5 10 5-10 5z'/>" +
-               "<path d='M6 12v5c3 3 9 3 12 0v-5'/>" +
-               "</svg></div>" +
+               "<div style='display:inline-block;background:rgba(255,255,255,0.25);" +
+               "border-radius:12px;padding:10px 24px;margin-bottom:20px;'>" +
+               "<span style='font-size:22px;font-weight:800;color:#ffffff;" +
+               "letter-spacing:2px;font-family:Arial,sans-serif;'>SENAC</span>" +
+               "</div>" +
                "<p style='color:#ffffff;font-size:18px;font-weight:600;margin:0;'>" +
                "Sistema de Atividades Complementares</p>" +
                "<p style='color:rgba(255,255,255,0.75);font-size:13px;margin:4px 0 0;'>" +
