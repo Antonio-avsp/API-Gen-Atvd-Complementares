@@ -14,6 +14,7 @@ import com.pi.apigenatvdcomplementares.models.Aluno;
 import com.pi.apigenatvdcomplementares.models.Curso;
 import com.pi.apigenatvdcomplementares.models.Submissao;
 import com.pi.apigenatvdcomplementares.repository.AlunoRepository;
+import com.pi.apigenatvdcomplementares.repository.CursoRepository;
 import com.pi.apigenatvdcomplementares.repository.SubmissaoRepository;
 
 @Service
@@ -27,6 +28,9 @@ public class SubmissaoService {
 
     @Autowired
     private AlunoRepository alunoRepository;
+
+    @Autowired
+    private CursoRepository cursoRepository;
 
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm");
@@ -70,9 +74,14 @@ public class SubmissaoService {
                     String nomeAluno  = aluno.getUsuario().getNome();
                     String dataEnvio  = submissao.getDataSubmissao().format(FORMATTER);
 
+                    String nomeCurso = submissao.getCurso() != null
+                            ? submissao.getCurso().getNome()
+                            : "Atividades Complementares";
+
                     emailService.enviarConfirmacaoSubmissao(
                             emailAluno,
                             nomeAluno,
+                            nomeCurso,
                             submissao.getTitulo(),
                             submissao.getHoras(),
                             submissao.getId(),
@@ -122,9 +131,14 @@ public class SubmissaoService {
                             ? sub.getCoordenador().getNome()
                             : "Coordenador";
 
+                    String nomeCurso = sub.getCurso() != null
+                            ? sub.getCurso().getNome()
+                            : "Atividades Complementares";
+
                     emailService.enviarAprovacao(
                             aluno.getUsuario().getEmail(),
                             aluno.getUsuario().getNome(),
+                            nomeCurso,
                             sub.getTitulo(),
                             sub.getHoras(),
                             nomeCoord,
@@ -157,9 +171,14 @@ public class SubmissaoService {
                             ? sub.getCoordenador().getNome()
                             : "Coordenador";
 
+                    String nomeCurso = sub.getCurso() != null
+                            ? sub.getCurso().getNome()
+                            : "Atividades Complementares";
+
                     emailService.enviarReprovacao(
                             aluno.getUsuario().getEmail(),
                             aluno.getUsuario().getNome(),
+                            nomeCurso,
                             sub.getTitulo(),
                             nomeCoord,
                             sub.getFeedback()

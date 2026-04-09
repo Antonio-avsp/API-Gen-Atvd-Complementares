@@ -11,13 +11,16 @@ import com.pi.apigenatvdcomplementares.models.CoordenadorCurso;
 @Repository
 public interface CoordenadorRepository extends JpaRepository<CoordenadorCurso, Long> {
 
-    // Procura um coordenador pelo email
     Optional<CoordenadorCurso> findByEmail(String email);
 
-    // Procura coordenadores cujo nome contenha o texto pesquisado
     List<CoordenadorCurso> findByNomeContainingIgnoreCase(String nome);
 
-    // Método crucial para verificar se um coordenador específico tem permissão sobre um curso
-    // Note que usamos 'CoordenadorId' porque o campo na entidade CoordenadorCurso chama-se 'coordenador'
+    /** Verifica se um coordenador específico já está vinculado a um curso */
     boolean existsByCoordenadorIdAndCursoId(Long usuarioId, Long cursoId);
+
+    /**
+     * ✅ Novo: verifica se um curso já tem QUALQUER coordenador vinculado.
+     * Garante a regra: um curso só pode ter um coordenador.
+     */
+    boolean existsByCursoId(Long cursoId);
 }

@@ -64,8 +64,8 @@ public class SecurityConfig {
                                                 .hasRole("SUPER_ADMIN")
 
                                                 // ── Gestão de Alunos ──────────────────────────────
-                                                // /alunos/me: aluno consulta os próprios dados
-                                                .requestMatchers(HttpMethod.GET, "/alunos/me")
+                                                // /alunos/me e /alunos/me/cursos: aluno consulta os próprios dados
+                                                .requestMatchers(HttpMethod.GET, "/alunos/me", "/alunos/me/cursos")
                                                 .authenticated()
                                                 // demais endpoints de aluno: apenas admin e coordenador
                                                 .requestMatchers("/alunos/**")

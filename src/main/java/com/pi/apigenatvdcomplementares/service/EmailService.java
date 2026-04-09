@@ -42,6 +42,7 @@ public class EmailService {
     public void enviarConfirmacaoSubmissao(
             String emailAluno,
             String nomeAluno,
+            String nomeCurso,
             String tituloAtividade,
             Integer horas,
             Long protocolo,
@@ -51,6 +52,7 @@ public class EmailService {
         String html = buildEmailBase(
                 "Submissão recebida",
                 "#1a56db",
+                nomeCurso,
                 nomeAluno,
                 "Sua atividade complementar foi <strong>recebida com sucesso</strong> e está aguardando avaliação do coordenador.",
                 buildTabela(new String[][]{
@@ -74,6 +76,7 @@ public class EmailService {
     public void enviarAprovacao(
             String emailAluno,
             String nomeAluno,
+            String nomeCurso,
             String tituloAtividade,
             Integer horas,
             String nomeCoord,
@@ -89,6 +92,7 @@ public class EmailService {
         String html = buildEmailBase(
                 "Atividade aprovada",
                 "#1a56db",
+                nomeCurso,
                 nomeAluno,
                 "Sua atividade foi <strong style='color:#065f46;'>aprovada</strong> pelo coordenador e as horas já foram computadas no seu histórico.",
                 buildTabela(new String[][]{
@@ -110,6 +114,7 @@ public class EmailService {
     public void enviarReprovacao(
             String emailAluno,
             String nomeAluno,
+            String nomeCurso,
             String tituloAtividade,
             String nomeCoord,
             String feedback) {
@@ -124,6 +129,7 @@ public class EmailService {
         String html = buildEmailBase(
                 "Atividade reprovada",
                 "#1a56db",
+                nomeCurso,
                 nomeAluno,
                 "Sua atividade foi <strong style='color:#991b1b;'>reprovada</strong> pelo coordenador. " +
                 "Verifique o motivo abaixo e reenvie com as correções necessárias.",
@@ -145,6 +151,7 @@ public class EmailService {
     private String buildEmailBase(
             String tituloStatus,
             String corHeader,
+            String nomeCurso,
             String nomeAluno,
             String mensagem,
             String conteudo,
@@ -167,7 +174,7 @@ public class EmailService {
                "<p style='color:#ffffff;font-size:18px;font-weight:600;margin:0;'>" +
                "Sistema de Atividades Complementares</p>" +
                "<p style='color:rgba(255,255,255,0.75);font-size:13px;margin:4px 0 0;'>" +
-               "Senac — Análise e Desenvolvimento de Sistemas</p>" +
+               "Senac — " + nomeCurso + "</p>" +
                "</td></tr>" +
 
                // Corpo
