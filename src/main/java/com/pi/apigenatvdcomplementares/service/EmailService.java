@@ -13,32 +13,50 @@ import java.util.Map;
 @Service
 public class EmailService {
 
-    @Value("${resend.api.key}")
-    private String resendApiKey;
+    @Value("${sendgrid.api.key}")
+    private String sendgridApiKey;
 
-    @Value("${resend.from:Sistema Senac <onboarding@resend.dev>}")
-    private String remetente;
+    @Value("${sendgrid.from.email:jorgeafigueredo2@gmail.com}")
+    private String fromEmail;
+
+    @Value("${sendgrid.from.name:Sistema Senac}")
+    private String fromName;
 
     private final RestTemplate restTemplate = new RestTemplate();
-    private static final String RESEND_URL = "https://api.resend.com/emails";
-
-    // ── Envio genérico via Resend HTTP API ────────────────────────────────────
+    private static final String SENDGRID_URL = "https://api.sendgrid.com/v3/mail/send";
 
     @Async
     public void enviarEmail(String destinatario, String assunto, String corpoHtml) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBearerAuth(resendApiKey);
+            headers.setBearerAuth(sendgridApiKey);
 
             Map<String, Object> body = new HashMap<>();
-            body.put("from", remetente);
-            body.put("to", List.of(destinatario));
+
+            // from
+            Map<String, String> from = new HashMap<>();
+            from.put("email", fromEmail);
+            from.put("name", fromName);
+            body.put("from", from);
+
+            // to
+            Map<String, String> to = new HashMap<>();
+            to.put("email", destinatario);
+            Map<String, Object> personalization = new HashMap<>();
+            personalization.put("to", List.of(to));
+            body.put("personalizations", List.of(personalization));
+
             body.put("subject", assunto);
-            body.put("html", corpoHtml);
+
+            // content
+            Map<String, String> content = new HashMap<>();
+            content.put("type", "text/html");
+            content.put("value", corpoHtml);
+            body.put("content", List.of(content));
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
-            restTemplate.postForEntity(RESEND_URL, request, String.class);
+            restTemplate.postForEntity(SENDGRID_URL, request, String.class);
 
         } catch (Exception e) {
             System.err.println("Erro ao enviar email para " + destinatario + ": " + e.getMessage());
@@ -58,8 +76,6 @@ public class EmailService {
 
         String assunto = "Atividade recebida — " + tituloAtividade;
         String html = buildEmailBase(
-                "Submissão recebida",
-                "#1a56db",
                 nomeCurso,
                 nomeAluno,
                 "Sua atividade complementar foi <strong>recebida com sucesso</strong> e está aguardando avaliação do coordenador.",
@@ -72,9 +88,7 @@ public class EmailService {
                 "<p style='font-size:13px;color:#6b7280;line-height:1.6;margin:0;'>" +
                 "Você será notificado por email assim que a atividade for avaliada. " +
                 "Acompanhe o status pelo sistema.</p>",
-                "Recebida",
-                "#d1fae5",
-                "#065f46"
+                "Recebida", "#d1fae5", "#065f46"
         );
         enviarEmail(emailAluno, assunto, html);
     }
@@ -98,8 +112,6 @@ public class EmailService {
                 : "";
 
         String html = buildEmailBase(
-                "Atividade aprovada",
-                "#1a56db",
                 nomeCurso,
                 nomeAluno,
                 "Sua atividade foi <strong style='color:#065f46;'>aprovada</strong> pelo coordenador e as horas já foram computadas no seu histórico.",
@@ -109,9 +121,7 @@ public class EmailService {
                         {"Coordenador", nomeCoord}
                 }) + feedbackHtml,
                 "<p style='font-size:13px;color:#6b7280;line-height:1.6;margin:0;'>Continue enviando suas atividades para completar a carga horária exigida.</p>",
-                "Aprovada",
-                "#d1fae5",
-                "#065f46"
+                "Aprovada", "#d1fae5", "#065f46"
         );
         enviarEmail(emailAluno, assunto, html);
     }
@@ -134,8 +144,6 @@ public class EmailService {
                 : "";
 
         String html = buildEmailBase(
-                "Atividade reprovada",
-                "#1a56db",
                 nomeCurso,
                 nomeAluno,
                 "Sua atividade foi <strong style='color:#991b1b;'>reprovada</strong> pelo coordenador. " +
@@ -145,9 +153,7 @@ public class EmailService {
                         {"Coordenador", nomeCoord}
                 }) + motivoHtml,
                 "<p style='font-size:13px;color:#6b7280;line-height:1.6;margin:0;'>Acesse o sistema para corrigir e reenviar a atividade.</p>",
-                "Reprovada",
-                "#fee2e2",
-                "#991b1b"
+                "Reprovada", "#fee2e2", "#991b1b"
         );
         enviarEmail(emailAluno, assunto, html);
     }
@@ -155,8 +161,6 @@ public class EmailService {
     // ── Builders ──────────────────────────────────────────────────────────────
 
     private String buildEmailBase(
-            String tituloStatus,
-            String corHeader,
             String nomeCurso,
             String nomeAluno,
             String mensagem,
@@ -173,7 +177,7 @@ public class EmailService {
                "<tr><td align='center'>" +
                "<table width='560' cellpadding='0' cellspacing='0' style='background:#ffffff;border-radius:12px;overflow:hidden;'>" +
 
-               "<tr><td style='background:" + corHeader + ";padding:32px 32px 24px;text-align:center;'>" +
+               "<tr><td style='background:#1a56db;padding:32px 32px 24px;text-align:center;'>" +
                "<div style='display:inline-block;background:rgba(255,255,255,0.25);" +
                "border-radius:12px;padding:10px 24px;margin-bottom:20px;'>" +
                "<span style='font-size:22px;font-weight:800;color:#ffffff;" +
