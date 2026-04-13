@@ -16,7 +16,7 @@ public class EmailService {
     @Value("${sendgrid.api.key}")
     private String sendgridApiKey;
 
-    @Value("${sendgrid.from.email:jorgeafigueredo2@gmail.com}")
+    @Value("${sendgrid.from.email}")
     private String fromEmail;
 
     @Value("${sendgrid.from.name:Sistema Senac}")
