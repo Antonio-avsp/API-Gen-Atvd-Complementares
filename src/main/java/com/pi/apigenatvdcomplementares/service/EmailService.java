@@ -2,6 +2,7 @@ package com.pi.apigenatvdcomplementares.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -28,6 +29,7 @@ public class EmailService {
     @Async
     public void enviarEmail(String destinatario, String assunto, String corpoHtml) {
         try {
+            System.out.println(">>> Enviando email DE: " + fromEmail + " PARA: " + destinatario);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setBearerAuth(sendgridApiKey);
@@ -56,7 +58,10 @@ public class EmailService {
             body.put("content", List.of(content));
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
-            restTemplate.postForEntity(SENDGRID_URL, request, String.class);
+            ResponseEntity<String> response = restTemplate.postForEntity(SENDGRID_URL, request, String.class);
+            System.out.println(">>> SendGrid status: " + response.getStatusCode());
+            System.out.println(">>> SendGrid body: " + response.getBody());
+            System.out.println(">>> Email enviado com sucesso para: " + destinatario);
 
         } catch (Exception e) {
             System.err.println("Erro ao enviar email para " + destinatario + ": " + e.getMessage());
