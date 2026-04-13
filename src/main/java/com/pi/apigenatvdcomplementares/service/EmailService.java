@@ -36,13 +36,11 @@ public class EmailService {
 
             Map<String, Object> body = new HashMap<>();
 
-            // from
             Map<String, String> from = new HashMap<>();
             from.put("email", fromEmail);
             from.put("name", fromName);
             body.put("from", from);
 
-            // to
             Map<String, String> to = new HashMap<>();
             to.put("email", destinatario);
             Map<String, Object> personalization = new HashMap<>();
@@ -51,7 +49,6 @@ public class EmailService {
 
             body.put("subject", assunto);
 
-            // content
             Map<String, String> content = new HashMap<>();
             content.put("type", "text/html");
             content.put("value", corpoHtml);
@@ -60,7 +57,6 @@ public class EmailService {
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
             ResponseEntity<String> response = restTemplate.postForEntity(SENDGRID_URL, request, String.class);
             System.out.println(">>> SendGrid status: " + response.getStatusCode());
-            System.out.println(">>> SendGrid body: " + response.getBody());
             System.out.println(">>> Email enviado com sucesso para: " + destinatario);
 
         } catch (Exception e) {
@@ -81,8 +77,7 @@ public class EmailService {
 
         String assunto = "Atividade recebida — " + tituloAtividade;
         String html = buildEmailBase(
-                nomeCurso,
-                nomeAluno,
+                nomeCurso, nomeAluno,
                 "Sua atividade complementar foi <strong>recebida com sucesso</strong> e está aguardando avaliação do coordenador.",
                 buildTabela(new String[][]{
                         {"Atividade", tituloAtividade},
@@ -90,9 +85,7 @@ public class EmailService {
                         {"Protocolo", "#" + protocolo},
                         {"Data de envio", dataEnvio}
                 }),
-                "<p style='font-size:13px;color:#6b7280;line-height:1.6;margin:0;'>" +
-                "Você será notificado por email assim que a atividade for avaliada. " +
-                "Acompanhe o status pelo sistema.</p>",
+                "<p style='font-size:13px;color:#6b7280;line-height:1.6;margin:0;'>Você será notificado por email assim que a atividade for avaliada. Acompanhe o status pelo sistema.</p>",
                 "Recebida", "#d1fae5", "#065f46"
         );
         enviarEmail(emailAluno, assunto, html);
@@ -117,8 +110,7 @@ public class EmailService {
                 : "";
 
         String html = buildEmailBase(
-                nomeCurso,
-                nomeAluno,
+                nomeCurso, nomeAluno,
                 "Sua atividade foi <strong style='color:#065f46;'>aprovada</strong> pelo coordenador e as horas já foram computadas no seu histórico.",
                 buildTabela(new String[][]{
                         {"Atividade", tituloAtividade},
@@ -149,16 +141,48 @@ public class EmailService {
                 : "";
 
         String html = buildEmailBase(
-                nomeCurso,
-                nomeAluno,
-                "Sua atividade foi <strong style='color:#991b1b;'>reprovada</strong> pelo coordenador. " +
-                "Verifique o motivo abaixo e reenvie com as correções necessárias.",
+                nomeCurso, nomeAluno,
+                "Sua atividade foi <strong style='color:#991b1b;'>reprovada</strong> pelo coordenador. Verifique o motivo abaixo e reenvie com as correções necessárias.",
                 buildTabela(new String[][]{
                         {"Atividade", tituloAtividade},
                         {"Coordenador", nomeCoord}
                 }) + motivoHtml,
                 "<p style='font-size:13px;color:#6b7280;line-height:1.6;margin:0;'>Acesse o sistema para corrigir e reenviar a atividade.</p>",
                 "Reprovada", "#fee2e2", "#991b1b"
+        );
+        enviarEmail(emailAluno, assunto, html);
+    }
+
+    // ── 4. Código de recuperação de senha ─────────────────────────────────────
+
+    public void enviarCodigoRecuperacao(String emailAluno, String nomeAluno, String codigo) {
+        String assunto = "Código de recuperação de senha — Sistema Senac";
+        String html = buildEmailBase(
+                "Sistema Senac", nomeAluno,
+                "Você solicitou a <strong>recuperação de senha</strong> do Sistema de Atividades Complementares.",
+                "<div style='background:#f9fafb;border-radius:12px;padding:24px;text-align:center;margin:8px 0;'>" +
+                "<p style='font-size:12px;color:#6b7280;margin:0 0 8px;font-weight:500;text-transform:uppercase;letter-spacing:1px;'>Seu código</p>" +
+                "<div style='font-size:40px;font-weight:800;color:#1a56db;letter-spacing:12px;font-family:monospace;'>" + codigo + "</div>" +
+                "<p style='font-size:12px;color:#6b7280;margin:12px 0 0;'>Válido por <strong>15 minutos</strong></p>" +
+                "</div>",
+                "<p style='font-size:13px;color:#6b7280;line-height:1.6;margin:0;'>Se você não solicitou a recuperação, ignore este email. Sua senha não será alterada.</p>",
+                "Recuperação de Senha", "#fff7ed", "#b45309"
+        );
+        enviarEmail(emailAluno, assunto, html);
+    }
+
+    // ── 5. Confirmação de senha alterada ─────────────────────────────────────
+
+    public void enviarConfirmacaoSenhaAlterada(String emailAluno, String nomeAluno) {
+        String assunto = "Senha alterada com sucesso — Sistema Senac";
+        String html = buildEmailBase(
+                "Sistema Senac", nomeAluno,
+                "Sua senha foi <strong>alterada com sucesso</strong>. Você já pode fazer login com a nova senha.",
+                "<div style='background:#d1fae5;border-radius:8px;padding:16px 20px;text-align:center;'>" +
+                "<p style='font-size:13px;color:#065f46;margin:0;'>Se você não realizou essa alteração, entre em contato com a coordenação imediatamente.</p>" +
+                "</div>",
+                "<p style='font-size:13px;color:#6b7280;line-height:1.6;margin:0;'>Por segurança, recomendamos não compartilhar sua senha com ninguém.</p>",
+                "Senha Alterada", "#d1fae5", "#065f46"
         );
         enviarEmail(emailAluno, assunto, html);
     }
@@ -218,8 +242,8 @@ public class EmailService {
         sb.append("<table style='width:100%;border-collapse:collapse;font-size:13px;'>");
         for (String[] linha : linhas) {
             sb.append("<tr>")
-              .append("<td style='color:#6b7280;padding:5px 0;width:45%;'>" + linha[0] + "</td>")
-              .append("<td style='color:#111827;font-weight:600;padding:5px 0;'>" + linha[1] + "</td>")
+              .append("<td style='color:#6b7280;padding:5px 0;width:45%;'>").append(linha[0]).append("</td>")
+              .append("<td style='color:#111827;font-weight:600;padding:5px 0;'>").append(linha[1]).append("</td>")
               .append("</tr>");
         }
         sb.append("</table></div>");

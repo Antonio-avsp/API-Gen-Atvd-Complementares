@@ -45,6 +45,12 @@ public class SecurityConfig {
                                                 // ── Rotas públicas ────────────────────────────────
                                                 .requestMatchers(
                                                                 "/api/auth/login",
+                                                                "/auth/recuperar-senha",
+                                                                "/auth/validar-codigo",
+                                                                "/auth/redefinir-senha",
+                                                                "/auth/password/solicitar",
+                                                                "/auth/password/validar",
+                                                                "/auth/password/redefinir",
                                                                 "/swagger-ui/**",
                                                                 "/v3/api-docs/**")
                                                 .permitAll()
