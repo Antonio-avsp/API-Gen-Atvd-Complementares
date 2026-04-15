@@ -22,7 +22,7 @@ COPY --from=build /app/target/*.jar app.jar
 # Porta padrão do Spring Boot
 EXPOSE 8080
 
-# Variáveis de ambiente com valores padrão (Railway injeta as reais)
-ENV JAVA_OPTS="-Xms256m -Xmx512m"
+# Limita a JVM para caber no plano free do Render (512MB)
+ENV JAVA_OPTS="-Xms64m -Xmx400m -XX:+UseSerialGC -XX:MaxRAM=512m"
 
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
