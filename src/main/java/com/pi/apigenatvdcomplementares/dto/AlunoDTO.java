@@ -10,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AlunoDTO {
 
+    private String nome;
     private String email;
     private String matricula;
     private Long cursoId;
@@ -18,7 +19,11 @@ public class AlunoDTO {
     public AlunoDTO(Aluno aluno) {
         this.usuarioId = aluno.getUsuarioId();
         this.matricula = aluno.getMatricula();
-        this.email = aluno.getUsuario() != null ? aluno.getUsuario().getEmail() : null;
+
+        if (aluno.getUsuario() != null) {
+            this.nome = aluno.getUsuario().getNome();
+            this.email = aluno.getUsuario().getEmail();
+        }
 
         if (aluno.getCursos() != null && !aluno.getCursos().isEmpty()) {
             this.cursoId = aluno.getCursos().get(0).getCurso().getId();
