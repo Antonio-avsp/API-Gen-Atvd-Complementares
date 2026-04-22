@@ -1,23 +1,16 @@
 package com.pi.apigenatvdcomplementares.repository;
 
-import java.util.Optional;
-
+import com.pi.apigenatvdcomplementares.models.Aluno;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.pi.apigenatvdcomplementares.models.Aluno;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AlunoRepository extends JpaRepository<Aluno, Long> {
 
-    Optional<Aluno> findByMatricula(String matricula); // Método para encontrar um aluno pela matrícula
+    Optional<Aluno> findByMatricula(String matricula);
 
-    Optional<Aluno> findByUsuarioNome(String nome);
-
-    boolean existsByMatricula(String matricula); // Método para verificar se um aluno com a matrícula fornecida já
-                                                 // existe
-
-    boolean existsByUsuarioId(Long usuarioId); // Método para verificar se um aluno com o ID do usuário fornecido já
-                                               // existe
-
+    List<Aluno> findByTurmaId(Long turmaId);
 }
