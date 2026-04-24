@@ -2,6 +2,7 @@ package com.pi.apigenatvdcomplementares.models;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pi.apigenatvdcomplementares.enums.TurnoTurma;
 
@@ -30,7 +31,7 @@ public class Turma {
     private Long id;
 
     @Column(name = "codigo", nullable = false, unique = true, length = 50, updatable = false)
-    private String codigo; // (TADS045 || 2026.1)
+    private String codigo;
 
     @Column(nullable = false)
     private String nome;
@@ -51,5 +52,6 @@ public class Turma {
     private Curso curso;
 
     @OneToMany(mappedBy = "turma")
+    @JsonIgnore
     private List<Aluno> alunos;
 }
