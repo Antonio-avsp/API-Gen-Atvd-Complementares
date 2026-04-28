@@ -32,9 +32,8 @@ public class SubmissaoService {
     @Autowired
     private CursoRepository cursoRepository;
 
-    private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm")
-                    .withZone(java.time.ZoneId.of("America/Sao_Paulo"));
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm")
+            .withZone(java.time.ZoneId.of("America/Sao_Paulo"));
 
     // ── Criar submissão + email de confirmação ────────────────────────────────
 
@@ -43,7 +42,13 @@ public class SubmissaoService {
         Submissao submissao = new Submissao();
         submissao.setTitulo(dto.getTitulo());
         submissao.setDescricao(dto.getDescricao());
-        submissao.setHoras(dto.getHoras());
+
+        // Regra de negócio: carga horária máxima por submissão é 20h.
+        // Se o aluno informar mais de 20h, é truncado em 20h.
+        // Se for menor ou igual, mantém o valor informado.
+        int horasInformadas = dto.getHoras();
+        int horasFinais = Math.min(horasInformadas, 20);
+        submissao.setHoras(horasFinais);
 
         Aluno aluno = new Aluno();
         aluno.setUsuarioId(dto.getAlunoId());
@@ -60,7 +65,6 @@ public class SubmissaoService {
 
         Submissao salva = submissaoRepository.save(submissao);
 
-        // Dispara email de confirmação de forma assíncrona
         enviarEmailConfirmacao(salva);
 
         return salva;
@@ -72,7 +76,7 @@ public class SubmissaoService {
             alunoRepository.findById(submissao.getAluno().getUsuarioId()).ifPresent(aluno -> {
                 if (aluno.getUsuario() != null) {
                     String emailAluno = aluno.getUsuario().getEmail();
-                    String nomeAluno  = aluno.getUsuario().getNome();
+                    String nomeAluno = aluno.getUsuario().getNome();
                     String dataEnvio = submissao.getDataSubmissao()
                             .atZone(java.time.ZoneId.of("UTC"))
                             .withZoneSameInstant(java.time.ZoneId.of("America/Sao_Paulo"))
@@ -85,7 +89,8 @@ public class SubmissaoService {
                             nomeCurso = cursoRepository.findById(submissao.getCurso().getId())
                                     .map(c -> c.getNome())
                                     .orElse("Atividades Complementares");
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
                     }
 
                     emailService.enviarConfirmacaoSubmissao(
@@ -95,8 +100,7 @@ public class SubmissaoService {
                             submissao.getTitulo(),
                             submissao.getHoras(),
                             submissao.getId(),
-                            dataEnvio
-                    );
+                            dataEnvio);
                 }
             });
         } catch (Exception e) {
@@ -147,7 +151,8 @@ public class SubmissaoService {
                             nomeCurso = cursoRepository.findById(sub.getCurso().getId())
                                     .map(c -> c.getNome())
                                     .orElse("Atividades Complementares");
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
                     }
 
                     emailService.enviarAprovacao(
@@ -157,8 +162,7 @@ public class SubmissaoService {
                             sub.getTitulo(),
                             sub.getHoras(),
                             nomeCoord,
-                            sub.getFeedback()
-                    );
+                            sub.getFeedback());
                 }
             });
         } catch (Exception e) {
@@ -192,7 +196,8 @@ public class SubmissaoService {
                             nomeCurso = cursoRepository.findById(sub.getCurso().getId())
                                     .map(c -> c.getNome())
                                     .orElse("Atividades Complementares");
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
                     }
 
                     emailService.enviarReprovacao(
@@ -201,8 +206,7 @@ public class SubmissaoService {
                             nomeCurso,
                             sub.getTitulo(),
                             nomeCoord,
-                            sub.getFeedback()
-                    );
+                            sub.getFeedback());
                 }
             });
         } catch (Exception e) {
