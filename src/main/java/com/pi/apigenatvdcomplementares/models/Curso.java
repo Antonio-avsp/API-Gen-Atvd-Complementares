@@ -38,7 +38,7 @@ public class Curso extends Auditable {
     @Column(name = "carga_horaria_minima", nullable = false)
     private int cargaHorariaMinima;
 
-    // 🔥 TODOS ignorados para evitar loop infinito
+    // TODOS ignorados para evitar loop infinito
 
     @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
