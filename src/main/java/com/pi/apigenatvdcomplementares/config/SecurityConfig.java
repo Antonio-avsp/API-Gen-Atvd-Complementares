@@ -73,6 +73,8 @@ public class SecurityConfig {
                                                 // /alunos/me e /alunos/me/cursos: aluno consulta os próprios dados
                                                 .requestMatchers(HttpMethod.GET, "/alunos/me", "/alunos/me/cursos")
                                                 .authenticated()
+                                                .requestMatchers(HttpMethod.POST, "/alunos/lote/**")
+                                                .hasAnyRole("SUPER_ADMIN", "COORDENADOR")
                                                 // demais endpoints de aluno: apenas admin e coordenador
                                                 .requestMatchers("/alunos/**")
                                                 .hasAnyRole("SUPER_ADMIN", "COORDENADOR")
