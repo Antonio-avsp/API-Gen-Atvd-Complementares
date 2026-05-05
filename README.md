@@ -1,354 +1,263 @@
-# API Gen Atvd Complementares
+# API Gen Atvd Complementares — SENAC
 
-<p align="center">
-  <strong>API REST para gestão de atividades complementares acadêmicas</strong>
-</p>
+<div align="center">
 
-<p align="center">
-  Projeto desenvolvido para apoiar o controle, envio, validação e acompanhamento de atividades complementares no ambiente acadêmico.
-</p>
+![Status](https://img.shields.io/badge/Status-Em%20Produção-green?style=for-the-badge)
+![Deploy](https://img.shields.io/badge/Deploy-Render-46E3B7?style=for-the-badge)
+![Java](https://img.shields.io/badge/Java-17+-red?style=for-the-badge)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0-6DB33F?style=for-the-badge)
+![MySQL](https://img.shields.io/badge/MySQL-8+-4479A1?style=for-the-badge)
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Java-17+-red?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Spring_Boot-4.0.3-6DB33F?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/MySQL-8+-4479A1?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Security-JWT-black?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/OpenAPI-Swagger-85EA2D?style=for-the-badge" />
-</p>
+**🔗 [API em produção](https://api-senac-5zz7.onrender.com)**  
+**📄 [Documentação Swagger](https://api-senac-5zz7.onrender.com/swagger-ui/index.html)**
+
+</div>
 
 ---
 
-## Sobre o projeto
-
-A **API Gen Atvd Complementares** é um backend REST criado para digitalizar o processo de gerenciamento de atividades complementares em instituições de ensino.
-
-A proposta do sistema é substituir processos manuais por uma solução centralizada, segura e escalável, permitindo que alunos, coordenadores e administradores acompanhem todo o fluxo de submissão e validação das atividades acadêmicas.
+> API REST para gestão completa de atividades complementares acadêmicas, com autenticação JWT, controle de acesso por perfil, envio de e-mails transacionais e regras de negócio configuráveis.
 
 ---
 
-## Objetivo
+## 🏫 Contexto Acadêmico
 
-Automatizar o controle de atividades complementares, permitindo:
-
-- cadastro e gerenciamento de usuários
-- cadastro de alunos
-- gerenciamento de cursos
-- gerenciamento de turmas
-- envio e controle de certificados
-- autenticação segura com JWT
-- controle de acesso por perfil
-- rastreabilidade e organização do processo acadêmico
+| Campo | Descrição |
+|---|---|
+| **Instituição** | SENAC |
+| **Curso** | Análise e Desenvolvimento de Sistemas (ADS) |
+| **Disciplina** | Projeto Integrador |
+| **Semestre** | 2026.1 |
 
 ---
 
-## Perfis de acesso
+## 🛠️ Tecnologias
 
-O sistema trabalha com três perfis principais:
-
-- **ALUNO**
-- **COORDENADOR**
-- **SUPER_ADMIN**
-
-Cada perfil possui permissões específicas dentro da aplicação.
-
----
-
-## Funcionalidades já implementadas
-
-- autenticação com login e geração de token JWT
-- controle de acesso com Spring Security
-- gerenciamento de usuários
-- gerenciamento de alunos
-- gerenciamento de cursos
-- gerenciamento de turmas
-- gerenciamento de certificados
-- gerenciamento de coordenadores por curso
-- documentação da API com Swagger/OpenAPI
+| Tecnologia | Finalidade |
+|---|---|
+| Java 17 | Linguagem principal |
+| Spring Boot 4 | Framework web |
+| Spring Security + JWT | Autenticação e autorização |
+| Spring Data JPA + Hibernate | Persistência de dados |
+| MySQL 8 (Aiven Cloud) | Banco de dados em produção |
+| SendGrid HTTP API | Envio de e-mails transacionais |
+| Springdoc OpenAPI / Swagger UI | Documentação da API |
+| Lombok | Redução de boilerplate |
+| Maven | Gerenciamento de dependências |
+| Docker | Containerização para deploy |
 
 ---
 
-## Tecnologias utilizadas
-
-- **Java 17**
-- **Spring Boot 4**
-- **Spring Web MVC**
-- **Spring Data JPA**
-- **Spring Security**
-- **JWT**
-- **Jakarta Validation**
-- **MySQL**
-- **Lombok**
-- **Springdoc OpenAPI / Swagger UI**
-- **Maven**
-
----
-
-## Estrutura do projeto
-
-```bash
-src/
-├── main/
-│   ├── java/com/pi/apigenatvdcomplementares/
-│   │   ├── config/
-│   │   ├── controller/
-│   │   ├── dto/
-│   │   ├── enums/
-│   │   ├── models/
-│   │   ├── repository/
-│   │   ├── security/
-│   │   ├── service/
-│   │   └── ApigenatvdcomplementaresApplication.java
-│   └── resources/
-│       └── application.properties
-
-## Principais endpoints
+## 📋 Funcionalidades Implementadas
 
 ### Autenticação
+- Login com geração de token JWT
+- Filtro JWT para validação em cada requisição
+- Recuperação de senha com código de 6 dígitos por e-mail (expira em 15 minutos)
+- Senhas criptografadas com BCrypt
 
-* `POST /api/auth/login`
+### Gestão de Usuários
+- CRUD completo de usuários
+- Perfis: `ALUNO`, `COORDENADOR`, `SUPER_ADMIN`
 
-### Usuários
+### Gestão de Alunos
+- Cadastro com matrícula e vínculo a curso
+- Endpoint `/alunos/me` — aluno consulta os próprios dados
+- Endpoint `/alunos/me/cursos` — retorna apenas os cursos do aluno logado
 
-* `POST /usuarios`
-* `GET /usuarios`
-* `GET /usuarios/{id}`
-* `GET /usuarios/email/{email}`
-* `DELETE /usuarios/{id}`
+### Gestão de Cursos
+- CRUD de cursos com carga horária mínima
+- Carga horária atualizada automaticamente pela soma das regras de atividades
 
-### Alunos
+### Gestão de Turmas
+- CRUD de turmas por curso
+- Vínculo/desvinculação de alunos com validação de matrícula no curso
+- Permissão: coordenador só cria/edita turmas dos próprios cursos
 
-* `POST /alunos`
-* `GET /alunos`
-* `GET /alunos/{id}`
-* `PUT /alunos/{id}`
-* `DELETE /alunos/{id}`
+### Gestão de Coordenadores
+- Vínculo coordenador ↔ curso
+- Regra de negócio: 1 coordenador por curso / 1 coordenador pode ter N cursos
 
-### Cursos
-
-* `POST /cursos`
-* `PUT /cursos/{id}`
-* `GET /cursos/{nome}`
-
-### Turmas
-
-* `POST /turmas`
-* `GET /turmas`
-* `GET /turmas/{id}`
-* `GET /turmas/curso/{cursoId}`
-* `PUT /turmas/{id}`
-* `DELETE /turmas/{id}`
+### Submissões
+- Criação de submissão por aluno
+- Aprovação e reprovação pelo coordenador com feedback
+- Histórico de status por submissão
 
 ### Certificados
+- Armazenamento de comprovantes em base64 (LONGTEXT)
+- Vínculo com submissão
 
-* `POST /certificados`
-* `GET /certificados`
-* `GET /certificados/{id}`
-* `PATCH /certificados/{id}`
-* `DELETE /certificados/{id}`
+### Regras de Atividades
+- CRUD de regras por curso (área, limite de horas, itens, exige comprovante)
+- Ao salvar/deletar uma regra, recalcula e atualiza automaticamente a carga horária mínima do curso
 
-### Coordenadores por curso
-
-* `POST /coordenadores-cursos`
-* `GET /coordenadores-cursos`
-* `GET /coordenadores-cursos/{nome}`
-* `PUT /coordenadores-cursos/{nome}`
-* `DELETE /coordenadores-cursos/{nome}`
-
----
-
-## Segurança
-
-A aplicação utiliza **Spring Security** com autenticação **stateless** baseada em **JWT**.
-
-### Regras principais
-
-* login público em `/api/auth/login`
-* Swagger liberado
-* endpoints protegidos por autenticação e perfis
-* autorização com regras por `role`
-* senhas criptografadas
-* filtro JWT para validação do token a cada requisição
+### E-mails Transacionais (SendGrid)
+- Confirmação de submissão recebida
+- Notificação de aprovação com feedback
+- Notificação de reprovação com motivo
+- Código de recuperação de senha
+- Confirmação de senha alterada
+- Templates HTML responsivos com nome do curso dinâmico
 
 ---
 
-## Documentação da API
+## 🔐 Perfis e Permissões
 
-A aplicação possui integração com OpenAPI/Swagger.
+| Endpoint | ALUNO | COORDENADOR | SUPER_ADMIN |
+|---|:---:|:---:|:---:|
+| `GET /alunos/me` | ✅ | — | — |
+| `GET /alunos/me/cursos` | ✅ | — | — |
+| `/alunos/**` | — | ✅ | ✅ |
+| `GET /cursos` | ✅ | ✅ | ✅ |
+| `POST/PUT/DELETE /cursos` | — | — | ✅ |
+| `/turmas/**` | — | ✅ | ✅ |
+| `GET /submissoes` | ✅ | ✅ | ✅ |
+| `POST /submissoes` | ✅ | ✅ | ✅ |
+| `PATCH /submissoes/{id}/aprovar` | — | ✅ | ✅ |
+| `PATCH /submissoes/{id}/rejeitar` | — | ✅ | ✅ |
+| `/regras/**` | GET | ✅ | ✅ |
+| `/coordenadores-cursos/**` | — | — | ✅ |
+| `/auth/password/**` | público | público | público |
 
-Após subir o projeto, acesse:
+---
 
-```bash
-http://localhost:8080/swagger-ui/index.html
+## 🗂️ Estrutura do Projeto
+
+```
+src/main/java/com/pi/apigenatvdcomplementares/
+├── config/
+│   ├── SecurityConfig.java       # Regras de autorização por endpoint
+│   ├── CorsConfig.java           # CORS com origens via variável de ambiente
+│   └── AsyncConfig.java          # @EnableAsync para e-mails assíncronos
+├── controller/
+│   ├── AuthController.java
+│   ├── UsuarioController.java
+│   ├── AlunoController.java
+│   ├── CursoController.java
+│   ├── TurmaController.java      # Inclui endpoints de vínculo de alunos
+│   ├── SubmissaoController.java
+│   ├── CertificadoController.java
+│   ├── CoordenadorController.java
+│   ├── RegraAtividadeController.java
+│   └── PasswordResetController.java
+├── service/
+│   ├── EmailService.java         # SendGrid HTTP API, 5 templates HTML
+│   ├── SubmissaoService.java     # Disparo de e-mail nos 3 eventos
+│   ├── CoordenadorService.java   # Regra: 1 coordenador por curso
+│   ├── RegraAtividadeService.java# Atualiza carga horária do curso
+│   ├── PasswordResetService.java # Geração e validação de código
+│   └── ...
+├── models/
+│   ├── Usuario.java
+│   ├── Aluno.java
+│   ├── Curso.java
+│   ├── Turma.java
+│   ├── Submissao.java
+│   ├── Certificado.java
+│   ├── CoordenadorCurso.java
+│   ├── RegraAtividade.java
+│   ├── AlunoCurso.java
+│   └── PasswordResetToken.java
+├── dto/                          # DTOs de request/response
+├── repository/                   # Interfaces JPA
+├── security/                     # JwtAuthenticationFilter, JwtService
+└── enums/                        # PerfilUsuario, StatusSubmissao, TurnoTurma
 ```
 
 ---
 
-## Como executar o projeto
+## ⚙️ Como Executar
 
 ### Pré-requisitos
-
-Antes de começar, você precisa ter instalado:
-
-* Java 17 ou superior
-* Maven
-* MySQL 8 ou superior
+- Java 17+
+- Maven
+- MySQL 8+
 
 ### 1. Clone o repositório
 
 ```bash
 git clone https://github.com/Jorgefigueredoo/API-Gen-Atvd-Complementares.git
-```
-
-### 2. Acesse a pasta do projeto
-
-```bash
 cd API-Gen-Atvd-Complementares
 ```
 
-### 3. Crie o banco de dados
+### 2. Configure o banco
 
 ```sql
 CREATE DATABASE api_sistema_senac;
 ```
 
-### 4. Configure o `application.properties`
-
-No arquivo:
-
-```bash
-src/main/resources/application.properties
-```
-
-adicione ou ajuste as propriedades abaixo:
+### 3. Configure `application-local.properties`
 
 ```properties
-spring.application.name=apigenatvdcomplementares
-
 spring.datasource.url=jdbc:mysql://localhost:3306/api_sistema_senac
-spring.datasource.username=seu_usuario
+spring.datasource.username=root
 spring.datasource.password=sua_senha
-
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
 
 jwt.secret=sua_chave_base64
 jwt.expiration=86400000
+
+sendgrid.api.key=${SENDGRID_API_KEY}
+sendgrid.from.email=seu@email.com
+sendgrid.from.name=Sistema Senac
 ```
 
-Substitua:
+> ⚠️ Nunca suba `application-local.properties` para o repositório. Ele está no `.gitignore`.
 
-* `seu_usuario` pelo usuário do MySQL
-* `sua_senha` pela senha do MySQL
-* `sua_chave_base64` por uma chave JWT segura em Base64
-
-### 5. Execute a aplicação
+### 4. Execute
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-No Windows:
-
-```bash
-mvnw.cmd spring-boot:run
-```
-
-A aplicação estará disponível em:
-
-```bash
-http://localhost:8080
-```
+Acesse: `http://localhost:8080/swagger-ui/index.html`
 
 ---
 
-## Exemplo de autenticação
+## 🌐 Deploy (Render + Aiven)
 
-### Requisição
+### Variáveis de ambiente no Render
 
-```json
-{
-  "email": "admin@email.com",
-  "senha": "123456"
-}
+```
+SPRING_PROFILES_ACTIVE=prod
+MYSQLDATABASE_URL=jdbc:mysql://<host>:<porta>/<banco>?ssl-mode=REQUIRED
+MYSQLDATABASE_USER=avnadmin
+MYSQLDATABASE_PASSWORD=<senha>
+JWT_SECRET=<chave-base64-64-chars>
+JWT_EXPIRATION=86400000
+CORS_ALLOWED_ORIGINS=https://progress-hub-six.vercel.app
+SENDGRID_API_KEY=<sua-chave>
+SENDGRID_FROM_EMAIL=<email-verificado>
 ```
 
-### Endpoint
-
-```http
-POST /api/auth/login
-```
-
-### Resposta esperada
-
-```json
-{
-  "token": "seu_token_jwt",
-  "tipo": "Bearer"
-}
-```
-
-### Uso do token
-
-```http
-Authorization: Bearer seu_token_jwt
-```
+### Infraestrutura
+- **API**: Render (free tier) com limite de memória JVM configurado (`-Xmx400m`)
+- **Banco**: Aiven MySQL (free tier, 1GB)
+- **E-mail**: SendGrid (free tier, 100 e-mails/dia)
+- **Keep-alive**: UptimeRobot pingando a cada 5 minutos
 
 ---
 
-## Arquitetura
+## 📌 Observações Técnicas
 
-O projeto segue uma arquitetura em camadas, com separação de responsabilidades entre:
-
-* **Controller** → exposição dos endpoints
-* **Service** → regras de negócio
-* **Repository** → acesso a dados
-* **Model** → entidades persistidas
-* **DTO** → transporte de dados entre camadas
-* **Security** → autenticação e autorização
-
-Essa organização facilita manutenção, escalabilidade e evolução do sistema.
+- `url_arquivo` nos certificados é `LONGTEXT` para suportar base64
+- Tabela `tb_historico_status_submissao` criada manualmente (limitação do `ddl-auto=update` com `@ElementCollection`)
+- E-mails são disparados de forma assíncrona (`@Async`) para não bloquear a resposta da API
+- Timezone dos e-mails configurado para `America/Sao_Paulo`
 
 ---
 
-## Status do projeto
+## 👥 Autores
 
-🚧 **Em desenvolvimento**
-
-O projeto já possui base funcional com autenticação, controle de acesso e principais módulos de cadastro e gestão acadêmica.
-
-Melhorias futuras possíveis:
-
-* testes automatizados mais completos
-* padronização de respostas e tratamento global de exceções
-* paginação e filtros
-* upload real de arquivos/certificados
-* deploy em nuvem
-* pipeline CI/CD
-* containerização com Docker
+| Integrante |
+|---|
+| Jorge Figueredo |
+| Vitor Santos |
+| Lucas Vinícius |
+| Renan Souza |
+| Antonio Vinícius |
+| Maria Vitória |
 
 ---
 
-## Contexto acadêmico
-
-Projeto desenvolvido no contexto acadêmico do **SENAC**, no curso de **Análise e Desenvolvimento de Sistemas**, como parte das atividades do projeto integrador.
-
----
-
-## Autores
-
-* **Jorge Figueredo**
-* **Vitor Santos**
-* **Lucas Vinicius**
-* **Renan Souza**
-* **Antonio Vinicius**
-* **Maria Vitória**
-
----
-
-## Licença
-
-Este projeto foi desenvolvido para fins acadêmicos.
-
-```
-```
+<div align="center">
+Feito com ❤️ para o SENAC · 2026
+</div>
