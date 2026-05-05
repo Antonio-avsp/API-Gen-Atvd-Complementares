@@ -38,12 +38,12 @@ public class CoordenadorService {
         Curso curso = cursoRepository.findById(cursoId)
                 .orElseThrow(() -> new RuntimeException("Curso não encontrado."));
 
-        // ✅ Regra: um coordenador não pode ser vinculado duas vezes ao mesmo curso
+        //  Regra: um coordenador não pode ser vinculado duas vezes ao mesmo curso
         if (coordenadorRepository.existsByCoordenadorIdAndCursoId(coordenadorId, cursoId)) {
             throw new RuntimeException("Este coordenador já está vinculado a este curso.");
         }
 
-        // ✅ Regra: um curso só pode ter UM coordenador
+        //  Regra: um curso só pode ter UM coordenador
         if (coordenadorRepository.existsByCursoId(cursoId)) {
             throw new RuntimeException(
                 "O curso '" + curso.getNome() + "' já possui um coordenador vinculado. " +
@@ -80,12 +80,12 @@ public class CoordenadorService {
             Curso curso = cursoRepository.findById(idDoCurso)
                     .orElseThrow(() -> new RuntimeException("Curso não encontrado ID: " + idDoCurso));
 
-            // ✅ Regra: coordenador já vinculado a este curso — pula sem erro
+            //  Regra: coordenador já vinculado a este curso — pula sem erro
             if (coordenadorRepository.existsByCoordenadorIdAndCursoId(coordenador.getId(), idDoCurso)) {
                 continue;
             }
 
-            // ✅ Regra: curso já tem outro coordenador — lança erro informativo
+            //  Regra: curso já tem outro coordenador — lança erro informativo
             if (coordenadorRepository.existsByCursoId(idDoCurso)) {
                 throw new RuntimeException(
                     "O curso '" + curso.getNome() + "' já possui um coordenador vinculado. " +
