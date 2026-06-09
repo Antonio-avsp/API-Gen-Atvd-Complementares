@@ -23,4 +23,11 @@ public interface CoordenadorRepository extends JpaRepository<CoordenadorCurso, L
      * Garante a regra: um curso só pode ter um coordenador.
      */
     boolean existsByCursoId(Long cursoId);
+
+    /**
+     * Lista todos os vínculos coordenador→curso de um determinado coordenador.
+     * Usado para filtrar o Histórico de Submissões: o coordenador só vê
+     * submissões dos cursos que ele coordena.
+     */
+    List<CoordenadorCurso> findByCoordenadorId(Long usuarioId);
 }
